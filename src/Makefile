@@ -16,9 +16,15 @@
 
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
+
+GTEST_LIB = gtest
+GTEST_INCLUDE = /usr/local/include
+GTEST_FLAGS = -c -Wall -I $(GTEST_INCLUDE)
+GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -pthread
+
 CXX = g++
-CPPFLAGS += `pkg-config --cflags protobuf grpc`
-CXXFLAGS += -std=c++11
+CPPFLAGS += `pkg-config --cflags protobuf grpc` 
+CXXFLAGS += -std=c++11 -g -Wall
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -36,13 +42,23 @@ PROTOS_PATH = ../protos
 
 vpath %.proto $(PROTOS_PATH)
 
-all: system-check data_store service_layer 
+DS_DIR = ./store
+
+all: system-check data_store 
 
 data_store: chirp.pb.o chirp.grpc.pb.o data_store.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
-	$(CXX) $^ $(LDFLAGS) -o $@
+ds_tests: data_store.o data_store_tests.o
+	$(CXX) $^ $(GTEST_LDFLAGS) -o $@
+
+data_store.o: $(DS_DIR)/data_store.cc
+	$(CXX) $(GTEST_FLAGS) $<
+
+data_store_tests.o: $(DS_DIR)/data_store_tests.cc
+	$(CXX) $(GTEST_FLAGS) $<
+#service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
+#	$(CXX) $^ $(LDFLAGS) -o $@
 
 # cli: ...
 .PRECIOUS: %.grpc.pb.cc

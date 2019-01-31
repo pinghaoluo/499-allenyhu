@@ -16,31 +16,31 @@ TEST(DataStorePut, BasePut) {
 TEST(DataStorePut, PutSameKey) {
   DataStore ds;
   ds.Put("test", "1");
-  ASSERT_EQ("1", ds.Get("test"));
+  ASSERT_EQ("1", ds.Get("test")[0]);
  
   bool check = ds.Put("test", "2");
   EXPECT_EQ(true, check);
-  EXPECT_EQ("2", ds.Get("test"));
+  EXPECT_EQ("2", ds.Get("test")[1]);
 }
 
 TEST(DataStoreGet, BaseGet) {
   DataStore ds;
   ds.Put("test", "1");
-  EXPECT_EQ("1", ds.Get("test"));
+  EXPECT_EQ("1", ds.Get("test")[0]);
 }
 
 TEST(DataStoreGet, GetNoKey) {
   DataStore ds;
-  std::string check = ds.Get("test");
+  auto check = ds.Get("test");
   ASSERT_EQ(true, check.empty());
 }
 
 TEST(DataStoreDel, BaseDel) {
   DataStore ds;
   ds.Put("test", "1");
-  EXPECT_EQ("1", ds.Get("test"));
   
   EXPECT_EQ(true, ds.DeleteKey("test"));
+  EXPECT_EQ(true, ds.Get("test").empty());
 }
 
 TEST(DataStoreDel, DelNoKey) {

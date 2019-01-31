@@ -1,6 +1,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <grpc/grpc.h>
 
@@ -16,10 +17,10 @@ class DataStore {
   // @ret: true on successful insertion; false otherwise
   bool Put(const std::string& key, const std::string& val);
 
-  // Returns string from requested key
+  // Returns vector<string> storing all values from requested key
   // @key: the key to be looked up
-  // @ret: the value at `key`
-  std::string Get(const std::string& key);
+  // @ret: the vector at key`
+  std::vector<std::string> Get(const std::string& key);
 
   // Deletes the value at given `key`
   // @key: the key of the key value pair to be removed
@@ -28,7 +29,7 @@ class DataStore {
  
  private:
   // Hashtable to store key value pairs
-  std::unordered_map<std::string, std::string> table_;
+  std::unordered_map<std::string, std::vector<std::string> > table_;
   
   // Lock associated with `table_` to make threadsafe
   std::mutex lock_;

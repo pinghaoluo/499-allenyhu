@@ -22,9 +22,9 @@ GTEST_INCLUDE = /usr/local/include
 GTEST_FLAGS = -c -Wall -I $(GTEST_INCLUDE)
 GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -pthread
 
-CXX = g++
+CXX = g++ -std=c++17
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
-CXXFLAGS += -std=c++11 -g -Wall
+CXXFLAGS += -std=c++17 -g -Wall
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -43,6 +43,7 @@ PROTOS_PATH = ../protos
 vpath %.proto $(PROTOS_PATH)
 
 DS_DIR = ./store
+SERVICE_DIR = ./service
 
 all: system-check data_store service_layer 
 
@@ -60,6 +61,15 @@ data_store_tests.o: $(DS_DIR)/data_store_tests.cc
 
 service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
 	$(CXX) $^ $(LDFLAGS) -o $@
+
+service_tests: service_layer.o service_layer_tests.o data_store.o
+	$(CXX) $^ $(GTEST_LDFLAGS) -o $@ 
+
+service_layer.o: $(SERVICE_DIR)/service_layer.cc
+	$(CXX) $^ $(GTEST_FLAGS) $<
+
+service_layer_tests.o: $(SERVICE_DIR)/service_layer_tests.cc
+	$(CXX) $^ $(GTEST_FLAGS) $<
 
 # cli: ...
 .PRECIOUS: %.grpc.pb.cc

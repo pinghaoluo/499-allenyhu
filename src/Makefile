@@ -44,7 +44,7 @@ vpath %.proto $(PROTOS_PATH)
 
 DS_DIR = ./store
 
-all: system-check data_store 
+all: system-check data_store service_layer 
 
 data_store: chirp.pb.o chirp.grpc.pb.o data_store.o
 	$(CXX) $^ $(LDFLAGS) -o $@
@@ -57,8 +57,9 @@ data_store.o: $(DS_DIR)/data_store.cc
 
 data_store_tests.o: $(DS_DIR)/data_store_tests.cc
 	$(CXX) $(GTEST_FLAGS) $<
-#service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
-#	$(CXX) $^ $(LDFLAGS) -o $@
+
+service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
+	$(CXX) $^ $(LDFLAGS) -o $@
 
 # cli: ...
 .PRECIOUS: %.grpc.pb.cc

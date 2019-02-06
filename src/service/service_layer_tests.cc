@@ -12,7 +12,20 @@ TEST(ServiceLayerCreate, NewServiceLayer) {
 // Registers a new user
 TEST(ServiceLayerRegister, BaseRegister) {
   ServiceLayer s;
+  ASSERT_TRUE(s.Register("root"));
+}
+
+// Tests Register method for ServiceLayer
+// Registers same user twice, should fail on second attempt
+TEST(ServiceLayerRegister, DoubleRegister) {
+  ServiceLayer s;
   EXPECT_EQ(true, s.Register("root"));
+  ASSERT_FALSE(s.Register("root"));
+}
+
+TEST(ServiceLayerRegister, RegisterEmpty) {
+  ServiceLayer s;
+  ASSERT_FALSE(s.Register(""));
 }
 
 int main(int argc, char** argv) {

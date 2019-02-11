@@ -9,6 +9,17 @@ bool ServiceLayer::Register(const std::string& uname) {
   return ds_.Put(uname, "registered");
 }
 
-Chirp::Chirp ServiceLayer::MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id) {
+Chirp ServiceLayer::MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id) {
+  Chirp c(uname, text, reply_id);
+  if(ds_.Put(c.id(), c.to_string())) {
+    return c;
+  }
+  return Chirp();
+}
 
+bool Follow(const std::string& uname, const std::string& follow_uname) {
+  if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
+    return false;
+  }
+  return ds_.Put(uname, follow_uname);
 }

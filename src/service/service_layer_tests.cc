@@ -28,6 +28,26 @@ TEST(ServiceLayerRegister, RegisterEmpty) {
   ASSERT_FALSE(s.Register(""));
 }
 
+TEST(ServiceLayerMakeChirp, BaseMakeChirp) {
+  ServiceLayer s;
+  Chirp c = s.MakeChirp("test", "test text", "id");
+  ASSERT_FALSE(c.id().empty());
+  
+  EXPECT_EQ("test", c.username());
+  EXPECT_EQ("test text", c.text());
+  EXPECT_EQ("id", c.parent_id());
+}
+
+TEST(ServiceLayerMakeChirp, MakeChirpNoReply) {
+  ServiceLayer s;
+  Chirp c = s.MakeChirp("test", "test text", nullptr);
+  ASSERT_FALSE(c.id().empty());
+
+  EXPECT_EQ("test", c.username());
+  EXPECT_EQ("test text", c.text());
+  EXPECT_TRUE(c.parent_id().empty());
+}
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

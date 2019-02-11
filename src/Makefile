@@ -62,14 +62,20 @@ data_store_tests.o: $(DS_DIR)/data_store_tests.cc
 service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-service_tests: service_layer.o service_layer_tests.o data_store.o
+service_tests: service_layer.o service_layer_tests.o data_store.o chirp.o timestamp.o
 	$(CXX) $^ $(GTEST_LDFLAGS) -o $@ 
 
 service_layer.o: $(SERVICE_DIR)/service_layer.cc
-	$(CXX) $^ $(GTEST_FLAGS) $<
+	$(CXX) $(GTEST_FLAGS) $<
 
 service_layer_tests.o: $(SERVICE_DIR)/service_layer_tests.cc
-	$(CXX) $^ $(GTEST_FLAGS) $<
+	$(CXX) $(GTEST_FLAGS) $<
+
+chirp.o: $(SERVICE_DIR)/chirp.cc 
+	$(CXX) $(GTEST_FLAGS) $<
+
+timestamp.o: $(SERVICE_DIR)/timestamp.cc
+	$(CXX) $(GTEST_FLAGS) $<
 
 # cli: ...
 .PRECIOUS: %.grpc.pb.cc

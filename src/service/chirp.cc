@@ -1,5 +1,7 @@
 #include "chirp.h"
 
+Chirp::Chirp() : username_(""), text_(""), id_(""), parent_id_(""), time_() {}
+
 Chirp::Chirp(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id) : 
              username_(uname), text_(text), time_() {
   parent_id_ = parent_id.value_or("");
@@ -24,4 +26,15 @@ const std::string& Chirp::parent_id() const {
 
 const Timestamp& Chirp::time() const {
   return time_;
+}
+
+std::string Chirp::to_string() {
+  std::string s = "";
+  s += std::to_string(text_.length());
+  s += text_;
+  if(!parent_id_.empty()) {
+    s += std::to_string(parent_id_.length());
+    s += parent_id_;
+  }
+  return s;
 }

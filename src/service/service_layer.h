@@ -20,7 +20,7 @@ class ServiceLayer {
   // @text: text of the Chirp
   // @reply_id: the ID number of the Chirp, this Chirp is replying to
   // @ret: the Chirp created from request
-  std::string Chirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
+  Chirp::Chirp MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
   
   // A user wants to follow another user's Chirps
   // @uname: the user that will be following another

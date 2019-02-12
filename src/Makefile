@@ -18,9 +18,10 @@ HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 
 GTEST_LIB = gtest
+GFLAGS_LIB = gflags
 GTEST_INCLUDE = /usr/local/include
 GTEST_FLAGS = -c -Wall -I $(GTEST_INCLUDE)
-GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -pthread
+GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -l $(GFLAGS_LIB) -pthread
 
 CXX = g++ -std=c++17
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
@@ -42,6 +43,7 @@ PROTOS_PATH = ../protos
 
 vpath %.proto $(PROTOS_PATH)
 
+CLI_DIR = ./cli
 DS_DIR = ./store
 SERVICE_DIR = ./service
 
@@ -77,7 +79,11 @@ chirp.o: $(SERVICE_DIR)/chirp.cc
 timestamp.o: $(SERVICE_DIR)/timestamp.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
-# cli: ...
+run_cli: cli.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+cli.o: $(CLI_DIR)/cli.cc
+	$(CXX) $(GTEST_FLAGS) $<
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<

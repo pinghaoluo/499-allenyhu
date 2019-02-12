@@ -28,4 +28,7 @@ class CliParser {
 
   // Helper function to parse chirp command
   std::string ParseChirp(const std::string& uname, const std::string& text, const std::string& reply_id);
+
+  // Helper function to parse follow command
+  std::string ParseFollow(const std::string& uname, const std::string& to_follow_user);
 };

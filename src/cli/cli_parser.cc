@@ -21,6 +21,10 @@ std::string CliParser::Parse(int argc, char** argv) {
   if(!FLAGS_chirp.empty()) {
     return ParseChirp(FLAGS_user, FLAGS_chirp, FLAGS_reply);
   }
+
+  if(!FLAGS_follow.empty()) {
+    return ParseFollow(FLAGS_user, FLAGS_follow);
+  }
   return "";
 }
 
@@ -39,10 +43,10 @@ std::string CliParser::ParseRegister(const std::string& uname) {
 std::string CliParser::ParseChirp(const std::string& uname, const std::string& text,
 		                  const std::string& reply_id) {
   if(!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor)) {
-    return "Cannot perform any other commands with Chirp.";
+    return "Cannot Follow, Read, or Monitor with Chirp.";
   }
 
-  if(FLAGS_user.empty()) {
+  if(uname.empty()) {
     return "Must be logged in to perform actions.";
   }
  
@@ -55,4 +59,22 @@ std::string CliParser::ParseChirp(const std::string& uname, const std::string& t
     return uname + " chirped: " + text;
   }
   return uname + " replied to " + reply_id + " with: " + text;
+}
+
+std::string CliParser::ParseFollow(const std::string& uname, const std::string& to_follow_user) {
+  if(!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+       FLAGS_read.empty() && !FLAGS_monitor)) {
+    return "Cannot Reply, Read, or Monitor with Follow.";
+  }
+  if(uname.empty()) {
+    return "Must be logged in to perform actions.";
+  }
+  if(to_follow_user.empty()) {
+    return "Must enter valid username to follow.";
+  }
+
+  if(service_.Follow(uname, to_follow_user)) {
+    return uname + " is following " + to_follow_user + ".";
+  }
+  return uname + " or " + to_follow_user + " are not registered."; 
 }

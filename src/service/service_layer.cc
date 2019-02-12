@@ -10,9 +10,9 @@ bool ServiceLayer::Register(const std::string& uname) {
 }
 
 Chirp ServiceLayer::MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id) {
-  if(ds_.Get(uname).empty()) {
-    return Chirp();
-  }
+  // if(ds_.Get(uname).empty()) {
+  //   return Chirp();
+  // }
 
   Chirp c(uname, text, reply_id);
   if(ds_.Put(c.id(), c.to_string())) {

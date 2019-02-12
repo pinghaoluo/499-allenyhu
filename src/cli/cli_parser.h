@@ -25,4 +25,7 @@ class CliParser {
 
   // Helper function to parse register command
   std::string ParseRegister(const std::string& uname);
+
+  // Helper function to parse chirp command
+  std::string ParseChirp(const std::string& uname, const std::string& text, const std::string& reply_id);
 };

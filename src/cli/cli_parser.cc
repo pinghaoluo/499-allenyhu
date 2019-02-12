@@ -12,12 +12,20 @@ CliParser::CliParser() : service_() {}
 
 std::string CliParser::Parse(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
-  std::string s = "";
   if(!FLAGS_registeruser.empty()) {
     return ParseRegister(FLAGS_registeruser);
   }
-  s += "user: ";
-  s += FLAGS_user;
+  if(FLAGS_user.empty()) {
+    return "Must be logged in to perform actions.";
+  }
+  
+  std::string s = "";
+  s += "user: "; 
+  s += FLAGS_user + "\n";
+  
+  if(!FLAGS_chirp.empty()) {
+    ParseChirp(FLAGS_user, FLAGS_chirp, FLAGS_reply);
+  }
   return s;
 }
 
@@ -26,4 +34,17 @@ std::string CliParser::ParseRegister(const std::string& uname) {
     return uname + " successfully registered.";
   } 
   return uname + " failed to be registered.";
+}
+
+std::string CliParser::ParseChirp(const std::string& uname, const std::string& text,
+		                  const std::string& reply_id) {
+  auto id = reply_id.empty() ? std::nullopt : std::optional<std::string>{reply_id};
+  Chirp c = service_.MakeChirp(uname, text, id); 
+  if(c.username().empty()) {
+    return "Chirp failed.";
+  }
+  if(reply_id.empty()) {
+    return uname + " chirped: " + text;
+  }
+  return uname + " replied to " + reply_id + " with: " + text;
 }

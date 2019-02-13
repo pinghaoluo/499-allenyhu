@@ -2,7 +2,7 @@
 
 #include <gflags/gflags.h>
 
-#include "../service/service_layer.h"
+#include "../service/service_layer_client.h"
 
 DECLARE_string(user);
 DECLARE_string(chirp);
@@ -21,7 +21,7 @@ class CliParser {
   std::string Parse(int argc, char** argv);
  
  private:
-  ServiceLayer service_;
+  ServiceLayerClient service_;
 
   // Helper function to parse register command
   std::string ParseRegister(const std::string& uname);

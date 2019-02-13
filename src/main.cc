@@ -2,7 +2,7 @@
 
 #include <gflags/gflags.h>
 
-#include "cli_parser.h"
+#include "./cli/cli_parser.h"
 
 int main(int argc, char** argv) {
   CliParser parser;

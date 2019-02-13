@@ -4,13 +4,17 @@
 #include "timestamp.h" 
 
 // Wrapper object for Chirp message
-class Chirp {
+class ChirpObj {
  public:
   // Default constructor for Chirp object, used on failure
-  Chirp();
+  ChirpObj();
 
-  // Constructor for Chirp object
-  Chirp(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id);
+  // Constructor for Chirp object when sending from user side
+  ChirpObj(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id);
+
+  // Constructor for Chirp object when receiving from server side
+  ChirpObj(const std::string& uname, const std::string& text, const std::string& parent_id,
+             const std::string& id, int seconds, int useconds);
   
   // Getter for `username_`
   const std::string& username() const;
@@ -25,7 +29,7 @@ class Chirp {
   const std::string& parent_id() const;
 
   // Getter for `time_`
-  const Timestamp& time() const;
+  const TimeStamp& time() const;
 
   // Helper method to convert Chirp into a string for GRPC transfer
   std::string to_string();
@@ -35,5 +39,5 @@ class Chirp {
    std::string text_;
    std::string id_;
    std::string parent_id_;
-   Timestamp time_;
+   TimeStamp time_;
 };

@@ -1,14 +1,38 @@
-#include "chirp.grpc.pb.h"
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include <grpc/grpc.h>
+#include <grpcpp/server.h>
+#include <grpcpp/server_builder.h>
+#include <grpcpp/server_context.h>
+#include <grpcpp/security/server_credentials.h>
+
+#include "data_store.grpc.pb.h"
 #include "data_store.h"
 
-class KeyValueStoreServiceImpl final : public Chirp::Service {
+using chirp::DeleteRequest;
+using chirp::DeleteReply;
+using chirp::GetRequest;
+using chirp::GetReply;
+using chirp::KeyValueStore;
+using chirp::PutRequest;
+using chirp::PutReply;
+using grpc::Channel;
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::ServerReaderWriter;
+using grpc::Status;
+
+class KeyValueStoreServiceImpl final : public KeyValueStore::Service {
  public:
   // Assumes only one KeyValueStoreServiceImpl will be active at one time
   explicit KeyValueStoreServiceImpl() : store_() {}
 	  
-  Status put(ServerContext* context, PutRequest* request) override {
-    bool status = store_.put(request->key, request->value);
+  Status put(ServerContext* context, const PutRequest* request, PutReply* response) override {
+    bool status = store_.Put(request->key(), request->value());
     if (status) {
       return Status::OK;
     }
@@ -16,33 +40,38 @@ class KeyValueStoreServiceImpl final : public Chirp::Service {
   }
 
   Status get(ServerContext* context, 
-	     ServerReaderWriter(GetRequest, GetReply>* stream) override {
+	     ServerReaderWriter<GetReply, GetRequest>* stream) override {
     std::vector<GetRequest> received_requests;
     GetRequest req;
     while (stream->Read(&req)) {
-      for (const GetRequest& r : received_requests) {
-       GetReply reply;
-       reply.set_value(store_.get(r.key()));
-       stream->Write(reply);
+      std::vector<std::string> vals = store_.Get(req.key());
+      for (const std::string& s : vals) {
+        GetReply reply;
+	reply.set_value(s);
+	stream->Write(reply);
       }
-      received_requests.push_back(req);
     }
     return Status::OK;
   }
 
-  Status deletekey(ServerContext* context, DeleteRequest* request) override {
-    store_.delete(request->key);
-    
-    return Status::OK;
+  Status deletekey(ServerContext* context, const DeleteRequest* request, DeleteReply* response) override {
+    if(store_.DeleteKey(request->key())) {
+      return Status::OK;
+    }
+    return Status::CANCELLED;
   }
+ 
+ private:
+  // Actual DataStore object to be communicating with
+  DataStore store_;
 };
 
 void RunServer() {
-  std::string server_address("0.0.0.0:5000");
+  std::string server_address("0.0.0.0:50000");
   KeyValueStoreServiceImpl service;
 
   ServerBuilder builder;
-  builder.AddListeningPort(server_address, grpc::InsercureServerCredentials());
+  builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "KeyValue Server listening on " << server_address << std::endl;

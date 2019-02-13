@@ -61,7 +61,7 @@ data_store.o: $(DS_DIR)/data_store.cc
 data_store_client: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o
+data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o data_store.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 data_store_tests.o: $(DS_DIR)/data_store_tests.cc

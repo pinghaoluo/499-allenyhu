@@ -10,7 +10,8 @@ DEFINE_string(follow, "", "user to follow");
 DEFINE_string(read, "", "returns chirp thread starting with given chirp id");
 DEFINE_bool(monitor, false, "starts monitoring for all following accounts' chirps");
 
-CliParser::CliParser() : service_() {}
+CliParser::CliParser() : service_(grpc::CreateChannel("0.0.0.0:50002",
+			          grpc::InsecureChannelCredentials())) {}
 
 std::string CliParser::Parse(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
@@ -51,7 +52,7 @@ std::string CliParser::ParseChirp(const std::string& uname, const std::string& t
   }
  
   auto id = reply_id.empty() ? std::nullopt : std::optional<std::string>{reply_id};
-  Chirp c = service_.MakeChirp(uname, text, id); 
+  ChirpObj c = service_.Chirp(uname, text, id); 
   if(c.username().empty()) {
     return "Chirp failed. Please check Service Layer connection, user is registered, and reply_id is valid.";
   }

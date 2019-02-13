@@ -54,6 +54,18 @@ ChirpObj ServiceLayerClient::Chirp(const std::string& uname, const std::string& 
   }
 }
 
+bool ServiceLayerClient::Follow(const std::string& uname, const std::string& to_follow_user) {
+  FollowRequest request;
+  request.set_username(uname);
+  request.set_to_follow(to_follow_user);
+
+  FollowReply reply;
+  ClientContext context;
+
+  Status status = stub_->follow(&context, request, &reply);
+  return status.ok();
+}
+/**
 int main(int argc, char** argv) {
   std::cout << "service client" << std::endl;
   ServiceLayerClient s(grpc::CreateChannel("0.0.0.0:50002",
@@ -63,3 +75,4 @@ int main(int argc, char** argv) {
   std::cout << s.Chirp("allen", "allen says hi", std::nullopt).to_string() << std::endl;
   return 0;
 }
+*/

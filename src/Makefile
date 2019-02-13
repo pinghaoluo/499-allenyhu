@@ -88,17 +88,9 @@ service_layer.o: $(SERVICE_DIR)/service_layer.cc
 service_layer_tests.o: $(SERVICE_DIR)/service_layer_tests.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
-chirp.o: $(SERVICE_DIR)/chirp.cc 
-	$(CXX) $(GTEST_FLAGS) $<
+chirp: main.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o 
+	$(CXX) $^ $(LDFLAGS) -lgflags -o $@
 
-timestamp.o: $(SERVICE_DIR)/timestamp.cc
-	$(CXX) $(GTEST_FLAGS) $<
-
-run_cli: cli.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-cli.o: $(CLI_DIR)/cli.cc
-	$(CXX) $(GTEST_FLAGS) $<
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<

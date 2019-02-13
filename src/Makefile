@@ -23,7 +23,7 @@ GTEST_INCLUDE = /usr/local/include
 GTEST_FLAGS = -c -Wall -I $(GTEST_INCLUDE)
 GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -l $(GFLAGS_LIB) -pthread
 
-CXX = g++ -std=c++17
+CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
 CXXFLAGS += -std=c++17 -g -Wall
 ifeq ($(SYSTEM),Darwin)
@@ -49,8 +49,8 @@ SERVICE_DIR = ./service
 
 all: system-check data_store service_layer 
 
-data_store: chirp.pb.o chirp.grpc.pb.o data_store.o
-	$(CXX) $^ $(LDFLAGS) -o $@
+# data_store: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o data_store.o data_store_client data_store_server.o
+# 	$(CXX) $^ $(LDFLAGS) -o $@
 
 ds_tests: data_store.o data_store_tests.o
 	$(CXX) $^ $(GTEST_LDFLAGS) -o $@
@@ -58,10 +58,19 @@ ds_tests: data_store.o data_store_tests.o
 data_store.o: $(DS_DIR)/data_store.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
+data_store_client: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o data_store.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
 data_store_tests.o: $(DS_DIR)/data_store_tests.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
 service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+service_layer_grpc: $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 service_tests: service_layer.o service_layer_tests.o data_store.o chirp.o timestamp.o

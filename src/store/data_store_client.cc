@@ -1,82 +1,89 @@
-#include <memory>
-#include <string>
+#include "data_store_client.h"
 
-#include <grpcpp/grpcpp.h>
-
+using chirp::DeleteRequest;
+using chirp::DeleteReply;
+using chirp::GetRequest;
+using chirp::GetReply;
+using chirp::KeyValueStore;
+using chirp::PutRequest;
+using chirp::PutReply;
 using grpc::Channel;
 using grpc::ClientContext;
+using grpc::ClientReaderWriter;
 using grpc::Status;
-using chrip::PutRequest;
-using chirp::PutReply;
-using chirp::KeyValueStore;
 
-// grpc client to communicate with DataStoreServer
-class DataStoreClient {
- public:
-  // Default constructor for DataStoreClient
-  DataStoreClient(std::shared_ptr<Channel> channel) : stub_(KeyValueStore::NewStub(channel)) {}
+// Helper method to make a GetRequest
+GetRequest MakeGetRequest(const std::string& key) {
+  GetRequest r;
+  r.set_key(key);
+  return r;
+}
 
-  // Put command to send PutRequest and receive PutReply
-  // @key: key to be put
-  // @val: val to be put at 'key'
-  // @ret: true or false based on success
-  bool Put(const std::string& key, const std::string& val) {
-    PutRequest request;
-    request.set_key(key);
-    request.set_value(val);
+DataStoreClient::DataStoreClient(std::shared_ptr<Channel> channel) : stub_(KeyValueStore::NewStub(channel)) {}
 
-    PutReply reply;
-    ClientContext context;
+bool DataStoreClient::Put(const std::string& key, const std::string& val) {
+  PutRequest request;
+  request.set_key(key);
+  request.set_value(val);
 
-    Status status = stub_->Put(&context, request, &reply);
+  PutReply reply;
+  ClientContext context;
+    
+  std::cout << "Server Put: " << key << " | " << val << std::endl;
+  Status status = stub_->put(&context, request, &reply);
+  return status.ok();
+}
 
-    if(status.ok()) {
-      return reply.message();
+std::vector<std::string> DataStoreClient::Get(const std::string& key) {
+  ClientContext context;
+    
+  std::shared_ptr<ClientReaderWriter<GetRequest, GetReply> > stream(
+    stub_->get(&context));
+    
+  std::thread writer([stream, key]() {
+    std::cout << "GetRequest: " << key << std::endl;
+    if(stream->Write(MakeGetRequest(key))) {
+      std::cout << "success write from client" << std::endl;
     } else {
-      return false;
+      std::cout << "client write failed" << std::endl;
     }
+    stream->WritesDone();
+  });
+
+  GetReply reply;
+  std::vector<std::string> replies;
+  while(stream->Read(&reply)) {
+    std::cout << "GetReply: " << reply.value() << std::endl;
+    replies.push_back(reply.value());
   }
+  writer.join();
+  Status status = stream->Finish();
 
-  // Get command to send GetRequest and receive GetReply
-  // @key: key to be retrieved from
-  // @ret: value retrieved from DataStore
-  std::string Get(const std::string& key) {
-    GetRequest request;
-    request.set_key(key);
-
-    GetReply reply;
-    ClientContext context;
-
-    Status status = stub_->Get(&context, request, &reply);
-
-    if(status.ok()) {
-      return reply.message();
-    } else {
-      return "";
-    }
+  if(status.ok()) {
+    return replies;
+  } else {
+    return std::vector<std::string>{};
   }
+}
 
-  // DeleteKey command to send DeleteRequest and receive DeleteReply
-  // @key: key to be deleted
-  // @ret: ture or false based on success
-  bool DeleteKey(const std::string& key) {
-    GetRequest request;
-    request.set_key(key);
+bool DataStoreClient::DeleteKey(const std::string& key) {
+  DeleteRequest request;
+  request.set_key(key);
 
-    GetReply reply;
-    ClientContext context;
+  DeleteReply reply;
+  ClientContext context;
 
-    Status status = stub_->DeleteKey(&context, request, &reply);
+  Status status = stub_->deletekey(&context, request, &reply);
+  return status.ok();
+}
 
-    if(status.ok()) {
-      return reply.message();
-    } else {
-      return false;
-    }
-  }
-
- private:
-  std::unique_ptr<KeyValueStore::Stub> stub_;
-};
-
-// TODO do we need to make a main like in the grpc examples?
+/**
+int main(int argc, char** argv) {
+ DataStoreClient client(grpc::CreateChannel("0.0.0.0:50000",
+			grpc::InsecureChannelCredentials()));
+ 
+ std::vector<std::string> result = client.Get("allen");
+ std::cout << result[0] << std::endl;
+ return 0; 
+}
+*/

@@ -56,5 +56,10 @@ ChirpObj ServiceLayerClient::Chirp(const std::string& uname, const std::string& 
 
 int main(int argc, char** argv) {
   std::cout << "service client" << std::endl;
+  ServiceLayerClient s(grpc::CreateChannel("0.0.0.0:50002",
+		       grpc::InsecureChannelCredentials()));
+
+  std::cout << s.Register("allen") << std::endl;
+  std::cout << s.Chirp("allen", "allen says hi", std::nullopt).to_string() << std::endl;
   return 0;
 }

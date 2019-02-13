@@ -2,14 +2,14 @@
 #include <string>
 #include <vector>
 
-#include "chirp.h"
+#include "chirp_obj.h"
 #include "../store/data_store_client.h"
 
 // Model class for service layer component of Chirp system
-class ServiceLayer {
+class ServiceLayerObj {
  public:
   // Default constructor
-  ServiceLayer();
+  ServiceLayerObj();
 
   // Registers a new user with the given username
   // @uname: username of new user
@@ -21,7 +21,7 @@ class ServiceLayer {
   // @text: text of the Chirp
   // @reply_id: the ID number of the Chirp, this Chirp is replying to
   // @ret: the Chirp created from request
-  Chirp MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
+  ChirpObj MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
   
   // A user wants to follow another user's Chirps
   // @uname: the user that will be following another

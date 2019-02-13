@@ -77,13 +77,13 @@ bool DataStoreClient::DeleteKey(const std::string& key) {
   return status.ok();
 }
 
+/**
 int main(int argc, char** argv) {
  DataStoreClient client(grpc::CreateChannel("0.0.0.0:50000",
 			grpc::InsecureChannelCredentials()));
  
- client.Put("test", "test text");
- std::vector<std::string> result = client.Get("test");
+ std::vector<std::string> result = client.Get("allen");
  std::cout << result[0] << std::endl;
  return 0; 
 }
-
+*/

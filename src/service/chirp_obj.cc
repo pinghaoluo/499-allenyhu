@@ -1,4 +1,5 @@
 #include "chirp_obj.h"
+#include <iostream>
 
 ChirpObj::ChirpObj() : username_(""), text_(""), id_(""), parent_id_(""), time_() {}
 
@@ -10,7 +11,7 @@ ChirpObj::ChirpObj(const std::string& uname, const std::string& text, const std:
 
 ChirpObj::ChirpObj(const std::string& uname, const std::string& text, const std::string& parent_id,
 	     const std::string& id, int seconds, int useconds) 
-	: username_(uname), text_(text), parent_id_(parent_id), id_(id), time_(seconds, useconds) {}
+	: username_(uname), text_(text), id_(id), parent_id_(parent_id), time_(seconds, useconds) {}
 
 const std::string& ChirpObj::username() const {
   return username_;
@@ -34,13 +35,17 @@ const TimeStamp& ChirpObj::time() const {
 
 std::string ChirpObj::to_string() {
   std::string s = "";
-  s += std::to_string(text_.length());
-  s += text_;
-  if(!parent_id_.empty()) {
-    s += std::to_string(parent_id_.length());
-    s += parent_id_;
-  }
+  s += std::to_string(id_.length()) + "|" + id_;
+  s += std::to_string(text_.length()) + "|" + text_;
+  s += std::to_string(parent_id_.length()) +"|" + parent_id_;
   return s;
+}
+
+void ChirpObj::print() {
+  std::cout << "chirp id: " << id_ << std::endl;
+  std::cout << "time: " << time_.seconds() << "-" << time_.useconds() << std::endl;
+  std::cout << "reply id: " << parent_id_ << std::endl;
+  std::cout << "chirp text: " << text_ << std::endl;
 }
 
 // Timestamp defined in this file due to small size
@@ -61,3 +66,11 @@ const int& TimeStamp::seconds() const {
 const int& TimeStamp::useconds() const{
   return useconds_;
 }
+/**
+int main(int argc, char** argv) {
+  ChirpObj c("test", "text", std::nullopt);
+  c.print();
+  std::cout << c.to_string() << std::endl;
+  return 0;
+}
+*/

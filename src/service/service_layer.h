@@ -1,8 +1,9 @@
 #include <optional>
 #include <string>
+#include <sstream>
 #include <vector>
 
-#include "chirp.h"
+#include "chirp_obj.h"
 #include "../store/data_store.h"
 
 // Model class for service layer component of Chirp system
@@ -21,7 +22,7 @@ class ServiceLayer {
   // @text: text of the Chirp
   // @reply_id: the ID number of the Chirp, this Chirp is replying to
   // @ret: the Chirp created from request
-  Chirp MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
+  ChirpObj MakeChirp(const std::string& uname, const std::string& text, const std::optional<std::string>& reply_id);
   
   // A user wants to follow another user's Chirps
   // @uname: the user that will be following another
@@ -41,5 +42,16 @@ class ServiceLayer {
 
  private:
   DataStore ds_; // private DataStore for testing purposes
+
+  // Helper function to parse data from DataStore
+  // @chirp: the string rep of a ChirpObj stored in the DataStore
+  // @ret: ChirpObj constructed from `chirp`
+  ChirpObj ParseChirpString(const std::string& chirp);
+
+  // Helper function to set up Read data for Chirps replying to another Chirp
+  // @parent_id: id of the Chirp being replied to
+  // @chirp_string: chirp to_string() of current ChirpObj
+  void MakeReply(const std::string& parent_id, const std::string& chirp_string);
+
   // TODO: Queue to backlog requests
 };

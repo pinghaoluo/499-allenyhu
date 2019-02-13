@@ -34,7 +34,8 @@ TEST(ServiceLayerRegister, RegisterEmpty) {
 // Makes a Chirp to add to DataStore, checks based on returned Chirp object
 TEST(ServiceLayerMakeChirp, BaseMakeChirp) {
   ServiceLayer s;
-  Chirp c = s.MakeChirp("test", "test text", "id");
+  s.Register("test");
+  ChirpObj c = s.MakeChirp("test", "test text", "id");
   ASSERT_FALSE(c.id().empty());
   
   EXPECT_EQ("test", c.username());
@@ -46,12 +47,22 @@ TEST(ServiceLayerMakeChirp, BaseMakeChirp) {
 // Makes a Chirp with no reply_id, Chirp object returned should not have a parent_id
 TEST(ServiceLayerMakeChirp, MakeChirpNoReply) {
   ServiceLayer s;
-  Chirp c = s.MakeChirp("test", "test text", std::nullopt);
+  s.Register("test");
+  ChirpObj c = s.MakeChirp("test", "test text", std::nullopt);
   ASSERT_FALSE(c.id().empty());
 
   EXPECT_EQ("test", c.username());
   EXPECT_EQ("test text", c.text());
   EXPECT_TRUE(c.parent_id().empty());
+}
+
+// Tests MakeChirp method for ServiceLayer
+// Makes a Chirp with unregistered user. Should fail 
+TEST(ServiceLayerMakeChirp, MakeChirpUnregisteredUser) {
+  ServiceLayer s;
+  ChirpObj c = s.MakeChirp("test", "test text", std::nullopt);
+  EXPECT_TRUE(c.id().empty());
+  EXPECT_TRUE(c.text().empty());
 }
 
 // Tests Follow method for ServiceLayer
@@ -80,6 +91,28 @@ TEST(ServiceLayerFollow, FollowByUnregisteredUser) {
   ASSERT_TRUE(s.Register("root"));
 
   EXPECT_FALSE(s.Follow("follower", "root"));
+}
+
+// Tests Read method for ServiceLayer
+// Makes 2 Chirps, one in response to the other. Reads the original Chirp.
+// Should return vector of Chirps in chrono order
+TEST(ServiceLayerRead, BaseRead) {
+  ServiceLayer s;
+  s.Register("c1");
+  s.Register("c2");
+
+  ChirpObj c1 = s.MakeChirp("c1", "c1 text", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+  std::string c1_id = c1.id();
+
+  ChirpObj c2 = s.MakeChirp("c2", "c2 text", c1_id);
+  ASSERT_FALSE(c2.id().empty());
+  std::string c2_id = c2.id();
+
+  auto replies = s.Read(c1_id);
+  ASSERT_EQ(2, replies.size());
+  EXPECT_EQ(c1_id, replies[0]);
+  EXPECT_EQ(c2_id, replies[1]); 
 }
 
 int main(int argc, char** argv) {

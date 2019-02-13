@@ -7,7 +7,6 @@
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
-// #include <grpcpp/grpcpp.h>
 #include <grpcpp/security/credentials.h>
 
 #include "data_store.grpc.pb.h"

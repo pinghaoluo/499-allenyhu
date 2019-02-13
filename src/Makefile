@@ -70,7 +70,10 @@ data_store_tests.o: $(DS_DIR)/data_store_tests.cc
 service_layer: chirp.pb.o chirp.grpc.pb.o service_layer.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-service_layer_grpc: $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
+service_layer_grpc: $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+service_layer_client: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 service_tests: service_layer.o service_layer_tests.o data_store.o chirp.o timestamp.o

@@ -1,5 +1,4 @@
 #include "chirp_obj.h"
-#include <iostream>
 
 ChirpObj::ChirpObj() : username_(""), text_(""), id_(""), parent_id_(""), time_() {}
 
@@ -70,11 +69,3 @@ const int& TimeStamp::seconds() const {
 const int& TimeStamp::useconds() const{
   return useconds_;
 }
-/**
-int main(int argc, char** argv) {
-  ChirpObj c("test", "text", std::nullopt);
-  c.print();
-  std::cout << c.to_string() << std::endl;
-  return 0;
-}
-*/

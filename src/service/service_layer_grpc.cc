@@ -24,6 +24,7 @@ ChirpObj ServiceLayerObj::MakeChirp(const std::string& uname, const std::string&
     CheckMonitor(uname, c.to_string());
     return c;
   }
+
   return ChirpObj();
 }
 
@@ -31,10 +32,12 @@ void ServiceLayerObj::MakeReply(const std::string& parent_id, const std::string&
   std::string reply_key = parent_id + "-reply-";
   int counter = 0;
   std::string put_reply_key = reply_key + std::to_string(counter);
+  
   while(!ds_.Get(put_reply_key).empty()) {
     counter++;
     put_reply_key = reply_key + std::to_string(counter);
   }
+  
   ds_.Put(put_reply_key, chirp_string);
 }
 
@@ -42,6 +45,7 @@ bool ServiceLayerObj::Follow(const std::string& uname, const std::string& follow
   if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
     return false;
   }
+  
   std::string monitor_key_base = uname + "-follow-";
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
@@ -49,6 +53,7 @@ bool ServiceLayerObj::Follow(const std::string& uname, const std::string& follow
     counter++;
     key = monitor_key_base + std::to_string(counter);
   }
+  
   return ds_.Put(key, follow_uname);
 }
 
@@ -56,6 +61,7 @@ std::vector<ChirpObj> ServiceLayerObj::Read(const std::string& id) {
   std::vector<ChirpObj> replies;
   std::string chirp_id = id;
   auto chirp = ds_.Get(chirp_id);
+  
   if(!chirp.empty()) {
     ChirpObj c = ParseChirpString(chirp[0]);
     replies.push_back(c);
@@ -63,6 +69,7 @@ std::vector<ChirpObj> ServiceLayerObj::Read(const std::string& id) {
     std::string reply_key_base = c.id() + "-reply-";
     ReadDfs(reply_key_base, &replies, 0);
   }
+  
   return replies;
 }
 
@@ -73,7 +80,6 @@ void ServiceLayerObj::ReadDfs(const std::string& key_base, std::vector<ChirpObj>
   if(chirp_string.empty()) {
     return;
   }
-
   ChirpObj reply = ParseChirpString(chirp_string[0]);
   chirps->push_back(reply);
 
@@ -87,6 +93,7 @@ void ServiceLayerObj::ReadDfs(const std::string& key_base, std::vector<ChirpObj>
 
 std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
   std::vector<std::string> follows = GetFollows(uname);
+  
   // Setting up DS to store monitor data
   for(const std::string& f : follows) {
     PutMonitorKey(uname, f);
@@ -97,6 +104,7 @@ std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
   int counter = 0;
   std::string key = monitor_check_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
+  
   while(!check.empty()) {
     ChirpObj c = ParseChirpString(check[0]);
     chirps.push_back(c);
@@ -105,6 +113,7 @@ std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
     key = monitor_check_base + std::to_string(counter);
     check = ds_.Get(key);
   }
+  
   return chirps;
 }
 
@@ -113,8 +122,10 @@ void ServiceLayerObj::PutMonitorKey(const std::string& uname, const std::string&
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
+  
   while(!check.empty()) {
     if(check[0] == uname) {
+      // Already have Monitor bookkeeping entry
       return;
     }
     counter++;
@@ -131,6 +142,7 @@ void ServiceLayerObj::CheckMonitor(const std::string& uname, const std::string& 
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
+  
   while(!check.empty()) {
     std::string monitorer = check[0];
     UpdateMonitor(monitorer, chirp_string);
@@ -145,11 +157,13 @@ void ServiceLayerObj::UpdateMonitor(const std::string& uname, const std::string&
   int counter = 0;
   std::string key = monitor_check_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
+  
   while(!check.empty()) {
     counter++;
     key = monitor_check_base + std::to_string(counter);
     check = ds_.Get(key);
   }
+  
   ds_.Put(key, chirp_string);
 }
 
@@ -159,12 +173,14 @@ std::vector<std::string> ServiceLayerObj::GetFollows(const std::string& uname) {
   int counter = 0;
   std::string key = follow_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
+  
   while(!check.empty()) {
     followers.push_back(check[0]);
     counter++;
     key = follow_key_base + std::to_string(counter);
     check = ds_.Get(key);
   }
+  
   return followers;
 }
 

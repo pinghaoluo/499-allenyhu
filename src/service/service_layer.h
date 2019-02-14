@@ -1,3 +1,6 @@
+#ifndef SRC_SERVICE_SERVICE_LAYER_H_
+#define SRC_SERVICE_SERVICE_LAYER_H_
+
 #include <optional>
 #include <string>
 #include <sstream>
@@ -81,3 +84,5 @@ class ServiceLayer {
 
   // TODO: Queue to backlog requests
 };
+
+#endif // SRC_SERVICE_SERVICE_LAYER_H_

@@ -1,3 +1,6 @@
+#ifndef SRC_CLI_CLI_PARSER_H_
+#define SRC_CLI_CLI_PARSER_H_
+
 #include <string>
 #include <unistd.h>
 
@@ -41,3 +44,5 @@ class CliParser {
   // Helper function to parse monitor command
   std::string ParseMonitor(const std::string& uname);
 };
+
+#endif //SRC_CLI_CLI_PARSER_H_

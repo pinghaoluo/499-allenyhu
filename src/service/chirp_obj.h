@@ -1,3 +1,6 @@
+#ifndef SRC_SERVICE_CHIRP_OBJ_H_
+#define SRC_SERVICE_CHIRP_OBJ_H_
+
 #include <optional>
 #include <string>
 
@@ -44,3 +47,5 @@ class ChirpObj {
    std::string parent_id_;
    TimeStamp time_;
 };
+
+#endif // SRC_SERVICE_CHIRP_OBJ_H_

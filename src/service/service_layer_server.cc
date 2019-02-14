@@ -53,6 +53,7 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
     if(c.username().empty()) {
       return Status::CANCELLED;
     }
+
     Chirp* reply = response->mutable_chirp();
     reply->set_username(c.username());
     reply->set_text(c.text());
@@ -66,9 +67,11 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
   
   Status follow(ServerContext* context, const FollowRequest* request, FollowReply* response) override {
     bool status = service_.Follow(request->username(), request->to_follow());
+    
     if(status) {
       return Status::OK;
     }
+    
     return Status::CANCELLED;
   }
 
@@ -83,6 +86,7 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
       reply->mutable_timestamp()->set_seconds(c.time().seconds());
       reply->mutable_timestamp()->set_useconds(c.time().useconds());
     }
+    
     return Status::OK;
   }
 
@@ -100,6 +104,7 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
 
       writer->Write(reply);
     }
+    
     return Status::OK;
   }
 

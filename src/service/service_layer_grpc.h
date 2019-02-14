@@ -1,3 +1,6 @@
+#ifndef SRC_SERVICE_SERVICE_LAYER_GRPC_H_
+#define SRC_SERVICE_SERVICE_LAYER_GRPC_H_
+
 #include <optional>
 #include <string>
 #include <sstream>
@@ -81,3 +84,5 @@ class ServiceLayerObj {
 
   // TODO: Queue to backlog requests
 };
+
+#endif // SRC_SERVICE_SERVICE_LAYER_GRPC_H_

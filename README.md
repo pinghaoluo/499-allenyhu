@@ -39,10 +39,15 @@ PROJECT SETUP
 6. mv service_layer.* service
 
 RUNNING PROJECT
+1. To make all executables & tests: make
+
+You can also make executables individually:
 1. make chirp
 2. make service_layer_server
 3. make data_store_server
-4. ./service_layer_server and ./data_store_server
+
+Be sure to run service_layer_server and data_store_server before using cli: ./service_layer_server and ./data_store_server
+
 
 USING CLI
 To Register User: ./chirp -—register <username>
@@ -65,3 +70,5 @@ Data_Store: store/data_store_tests.cc
 
 No tests for cli because would be virtually pointless without GRPC 
 
+CLEANING
+1. make clean: removes all executables but will not remove proto generated files

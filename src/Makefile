@@ -47,10 +47,7 @@ CLI_DIR = ./cli
 DS_DIR = ./store
 SERVICE_DIR = ./service
 
-all: system-check data_store service_layer 
-
-# data_store: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o data_store.o data_store_client data_store_server.o
-# 	$(CXX) $^ $(LDFLAGS) -o $@
+all: chirp data_store_server service_layer_server ds_tests service_tests
 
 ds_tests: data_store.o data_store_tests.o
 	$(CXX) $^ $(GTEST_LDFLAGS) -o $@
@@ -100,7 +97,7 @@ chirp: main.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVIC
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -f *.o *.pb.cc *.pb.h data_store service_layer cli 
+	rm -f *.o $(SERVICE_DIR)/*.o $(DS_DIR)/*.o $(CLI_DIR)/*.o *.pb.cc *.pb.h data_store_server service_layer_server chirp ds_tests service_tests 
 
 # The following is to test your system and ensure a smoother experience.
 # They are by no means necessary to actually compile a grpc-enabled software.

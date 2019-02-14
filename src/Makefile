@@ -137,19 +137,19 @@ ifneq ($(HAS_VALID_PROTOC),true)
         @echo
 endif
 ifneq ($(HAS_PLUGIN),true)
-        @echo " DEPENDENCY ERROR"
-        @echo
-        @echo "You don't have the grpc c++ protobuf plugin installed in your path."
-        @echo "Please install grpc. You can find it here:"
-        @echo
-        @echo "   https://github.com/grpc/grpc"
-        @echo
-        @echo "Here is what I get when trying to detect if you have the plugin:"
-        @echo
-        -which $(GRPC_CPP_PLUGIN)
-        @echo
-        @echo
+	@echo " DEPENDENCY ERROR"
+	@echo
+	@echo "You don't have the grpc c++ protobuf plugin installed in your path."
+	@echo "Please install grpc. You can find it here:"
+	@echo
+	@echo "   https://github.com/grpc/grpc"
+	@echo
+	@echo "Here is what I get when trying to detect if you have the plugin:"
+	@echo
+	-which $(GRPC_CPP_PLUGIN)
+	@echo
+	@echo
 endif
 ifneq ($(SYSTEM_OK),true)
-        @false
+	@false
 endif

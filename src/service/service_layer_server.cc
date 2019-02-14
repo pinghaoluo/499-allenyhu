@@ -57,8 +57,6 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
     reply->set_text(c.text());
     reply->set_id(c.id());
     reply->set_parent_id(c.parent_id());
-    //t.set_seconds(c.time().seconds());
-    //t.set_useconds(c.time().useconds());
     reply->mutable_timestamp()->set_seconds(c.time().seconds());
     reply->mutable_timestamp()->set_useconds(c.time().useconds());
 
@@ -74,7 +72,16 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
   }
 
   Status read(ServerContext* context, const ReadRequest* request, ReadReply* response) override {
-    std::cout << "SERVICE SERVER READ NOT IMPLEMENTED" << std::endl;
+    std::vector<ChirpObj> reply_chirps = service_.Read(request->chirp_id());
+    for(auto c : reply_chirps) {
+      Chirp* reply = response->add_chirps();
+      reply->set_username(c.username());
+      reply->set_text(c.text());
+      reply->set_id(c.id());
+      reply->set_parent_id(c.parent_id());
+      reply->mutable_timestamp()->set_seconds(c.time().seconds());
+      reply->mutable_timestamp()->set_useconds(c.time().useconds());
+    }
     return Status::OK;
   }
 

@@ -34,6 +34,9 @@ class ChirpObj {
   // Helper method to convert Chirp into a string for GRPC transfer
   std::string to_string();
 
+  // Helper method to print Chirp data
+  std::string print_string();
+
  private:
    std::string username_;
    std::string text_;

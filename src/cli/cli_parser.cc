@@ -26,6 +26,10 @@ std::string CliParser::Parse(int argc, char** argv) {
   if(!FLAGS_follow.empty()) {
     return ParseFollow(FLAGS_user, FLAGS_follow);
   }
+
+  if(!FLAGS_read.empty()) {
+    return ParseRead(FLAGS_read);
+  }
   return "";
 }
 
@@ -51,15 +55,12 @@ std::string CliParser::ParseChirp(const std::string& uname, const std::string& t
     return "Must be logged in to perform actions.";
   }
  
-  auto id = reply_id.empty() ? std::nullopt : std::optional<std::string>{reply_id};
-  ChirpObj c = service_.Chirp(uname, text, id); 
+  auto r_id = reply_id.empty() ? std::nullopt : std::optional<std::string>{reply_id};
+  ChirpObj c = service_.Chirp(uname, text, r_id); 
   if(c.username().empty()) {
     return "Chirp failed. Please check Service Layer connection, user is registered, and reply_id is valid.";
   }
-  if(reply_id.empty()) {
-    return uname + " chirped: " + text;
-  }
-  return uname + " replied to " + reply_id + " with: " + text;
+  return c.print_string();
 }
 
 std::string CliParser::ParseFollow(const std::string& uname, const std::string& to_follow_user) {
@@ -78,4 +79,19 @@ std::string CliParser::ParseFollow(const std::string& uname, const std::string& 
     return uname + " is following " + to_follow_user + ".";
   }
   return uname + " or " + to_follow_user + " are not registered."; 
+}
+
+std::string CliParser::ParseRead(const std::string& chirp_id) {
+  if(!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+       FLAGS_follow.empty() && !FLAGS_monitor)) {
+    return "Cannot Reigster, Chirp, Reply, Follow, or Monitor with Read.";
+  }
+
+  auto replies = service_.Read(chirp_id);
+  std::string s = "";
+  for(auto r : replies) {
+    s += r.print_string();
+    s += "\n";
+  }
+  return s;
 }

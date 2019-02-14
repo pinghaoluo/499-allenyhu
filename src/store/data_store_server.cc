@@ -43,6 +43,7 @@ class KeyValueStoreServiceImpl final : public KeyValueStore::Service {
 	     ServerReaderWriter<GetReply, GetRequest>* stream) override {
     std::vector<GetRequest> received_requests;
     GetRequest req;
+    
     while (stream->Read(&req)) {
       std::vector<std::string> vals = store_.Get(req.key());
       for (const std::string& s : vals) {
@@ -51,6 +52,7 @@ class KeyValueStoreServiceImpl final : public KeyValueStore::Service {
 	stream->Write(reply);
       }
     }
+    
     return Status::OK;
   }
 
@@ -58,6 +60,7 @@ class KeyValueStoreServiceImpl final : public KeyValueStore::Service {
     if(store_.DeleteKey(request->key())) {
       return Status::OK;
     }
+    
     return Status::CANCELLED;
   }
  

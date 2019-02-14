@@ -1,9 +1,10 @@
+#ifndef SRC_STORE_DATA_STORE_H_
+#define SRC_STORE_DATA_STORE_H_
+
 #include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <grpc/grpc.h>
 
 // Model class for data store component of Chirp system. Uses unordered_map to store data.
 class DataStore {
@@ -34,3 +35,5 @@ class DataStore {
   // Lock associated with `table_` to make threadsafe
   std::mutex lock_;
 };
+
+#endif // SRC_STORE_DATA_STORE_H_

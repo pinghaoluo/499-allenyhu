@@ -29,31 +29,23 @@ bool DataStoreClient::Put(const std::string& key, const std::string& val) {
   PutReply reply;
   ClientContext context;
     
-  std::cout << "Server Put: " << key << " | " << val << std::endl;
   Status status = stub_->put(&context, request, &reply);
   return status.ok();
 }
 
 std::vector<std::string> DataStoreClient::Get(const std::string& key) {
   ClientContext context;
-    
   std::shared_ptr<ClientReaderWriter<GetRequest, GetReply> > stream(
     stub_->get(&context));
     
   std::thread writer([stream, key]() {
-    std::cout << "GetRequest: " << key << std::endl;
-    if(stream->Write(MakeGetRequest(key))) {
-      std::cout << "success write from client" << std::endl;
-    } else {
-      std::cout << "client write failed" << std::endl;
-    }
+    stream->Write(MakeGetRequest(key)); 
     stream->WritesDone();
   });
 
   GetReply reply;
   std::vector<std::string> replies;
   while(stream->Read(&reply)) {
-    std::cout << "GetReply: " << reply.value() << std::endl;
     replies.push_back(reply.value());
   }
   writer.join();
@@ -76,14 +68,3 @@ bool DataStoreClient::DeleteKey(const std::string& key) {
   Status status = stub_->deletekey(&context, request, &reply);
   return status.ok();
 }
-
-/**
-int main(int argc, char** argv) {
- DataStoreClient client(grpc::CreateChannel("0.0.0.0:50000",
-			grpc::InsecureChannelCredentials()));
- 
- std::vector<std::string> result = client.Get("allen");
- std::cout << result[0] << std::endl;
- return 0; 
-}
-*/

@@ -20,10 +20,12 @@ std::vector<std::string> DataStore::Get(const std::string& key) {
   if(val == table_.end()) {
     return {}; 
   }
+  
   return val->second;
 }
 
 bool DataStore::DeleteKey(const std::string& key) {
   std::lock_guard<std::mutex> lg(lock_);
+  
   return table_.erase(key);
 }

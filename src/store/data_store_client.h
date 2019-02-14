@@ -1,3 +1,6 @@
+#ifndef SRC_STORE_DATA_STORE_CLIENT_H_
+#define SRC_STORE_DATA_STORE_CLIENT_H_
+
 #include <memory>
 #include <string>
 #include <thread>
@@ -36,3 +39,5 @@ class DataStoreClient {
  private:
   std::unique_ptr<chirp::KeyValueStore::Stub> stub_;
 };
+
+#endif // SRC_STORE_DATA_STORE_CLIENT_H_

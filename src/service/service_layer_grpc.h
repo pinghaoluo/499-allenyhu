@@ -38,7 +38,7 @@ class ServiceLayerObj {
   // Streams Chirps from all followed users
   // @uname: the user requesting the monitor
   // @ret: the Chirps of all followed users
-  std::string Monitor(const std::string& uname);
+  std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
   DataStoreClient ds_; // private DataStore for testing purposes
@@ -58,6 +58,26 @@ class ServiceLayerObj {
   // @chirps: vector in which to store replies in DFS order
   // @counter: tracker for which reponse to fetch
   void ReadDfs(const std::string& key_base, std::vector<ChirpObj>* chirps, int counter);
+  
+  // Helper function to find all usernames of people `uname` is following
+  // @uname: current user
+  // @ret: vector of all users `uname` is following
+  std::vector<std::string> GetFollows(const std::string& uname);
+
+  // Helper fuction to add Monitor bookkeeping key to DS
+  // @uname: current user
+  // @followed_user: user `uname` user is following and wants to monitor
+  void PutMonitorKey(const std::string& uname, const std::string& followed_user);
+
+  // Helper function to check if `uname` is being monitored
+  // @uname: user who is being monitored by another user
+  // @chirp_string: the chirp `uname` has just made
+  void CheckMonitor(const std::string& uname, const std::string& chirp_string);
+
+  // Helper function to store chirp made by user monitored by `uname`
+  // @uname: the user who is monitoring another
+  // @chirp_string: data of Chirp just made by a user `uname` is following
+  void UpdateMonitor(const std::string& uname, const std::string& chirp_string);
 
   // TODO: Queue to backlog requests
 };

@@ -48,6 +48,7 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
   Status chirp(ServerContext* context, const ChirpRequest* request, ChirpReply* response) override {
     std::optional<std::string> reply_id = 
 	    request->parent_id().empty() ? std::nullopt : std::optional<std::string>{request->parent_id()};
+    
     ChirpObj c = service_.MakeChirp(request->username(), request->text(), reply_id);
     if(c.username().empty()) {
       return Status::CANCELLED;
@@ -86,7 +87,19 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
   }
 
   Status monitor(ServerContext* context, const MonitorRequest* request, ServerWriter<MonitorReply>* writer) override {
-    std::cout << "SERVICE SERVER MONITOR NOT IMPLEMENTED" << std::endl;
+    std::vector<ChirpObj> chirps = service_.Monitor(request->username());
+    for(const ChirpObj& c : chirps) {
+      MonitorReply reply;
+      Chirp* reply_chirp = reply.mutable_chirp();
+      reply_chirp->set_username(c.username());
+      reply_chirp->set_text(c.text());
+      reply_chirp->set_id(c.id());
+      reply_chirp->set_parent_id(c.parent_id());
+      reply_chirp->mutable_timestamp()->set_seconds(c.time().seconds());
+      reply_chirp->mutable_timestamp()->set_useconds(c.time().useconds()); 
+
+      writer->Write(reply);
+    }
     return Status::OK;
   }
 

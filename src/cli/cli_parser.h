@@ -5,6 +5,7 @@
 
 #include "../service/service_layer_client.h"
 
+// GFLAG declarations for CLI args
 DECLARE_string(user);
 DECLARE_string(chirp);
 DECLARE_string(reply);
@@ -22,6 +23,7 @@ class CliParser {
   std::string Parse(int argc, char** argv);
  
  private:
+  // ServiceLayerClient that connects CLI to the ServiceLayerServer
   ServiceLayerClient service_;
 
   // Helper function to parse register command

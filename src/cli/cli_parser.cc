@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+// GFLAG definitions for cmdline args
+// DECLARED in cli_parser.h to allow external access
 DEFINE_string(register, "", "username for registering a new user");
 DEFINE_string(user, "", "username for user making command");
 DEFINE_string(chirp, "", "text to be chirped");
@@ -58,7 +60,8 @@ std::string CliParser::ParseChirp(const std::string& uname, const std::string& t
   if(uname.empty()) {
     return "Must be logged in to perform actions.";
   }
- 
+  
+  // Determins if reply_id is optional or nullopt 
   auto r_id = reply_id.empty() ? std::nullopt : std::optional<std::string>{reply_id};
   ChirpObj c = service_.Chirp(uname, text, r_id); 
   if(c.username().empty()) {
@@ -114,6 +117,8 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
     for(auto c : chirps) {
       std::cout << c.print_string() << std::endl;
     }
+
+    // Sleeps loop to make output more readable
     usleep(time_int);
   }
   return "Monitor complete";

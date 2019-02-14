@@ -65,6 +65,25 @@ bool ServiceLayerClient::Follow(const std::string& uname, const std::string& to_
   Status status = stub_->follow(&context, request, &reply);
   return status.ok();
 }
+
+std::vector<ChirpObj> ServiceLayerClient::Read(const std::string& chirp_id) {
+  ReadRequest request;
+  request.set_chirp_id(chirp_id);
+
+  ReadReply reply;
+  ClientContext context;
+
+  Status status = stub_->read(&context, request, &reply);
+  std::vector<ChirpObj> replies;
+  for(auto chirp : reply.chirps()) {
+    ChirpObj o(chirp.username(), chirp.text(), chirp.id(),
+             chirp.parent_id(), chirp.timestamp().seconds(),
+             chirp.timestamp().useconds());
+    replies.push_back(o);
+  }
+  return replies;
+}
+
 /**
 int main(int argc, char** argv) {
   std::cout << "service client" << std::endl;

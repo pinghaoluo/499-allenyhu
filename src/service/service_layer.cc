@@ -29,10 +29,11 @@ void ServiceLayer::MakeReply(const std::string& parent_id, const std::string& ch
   std::string reply_key = parent_id + "-reply-";
   int counter = 0;
   std::string put_reply_key = reply_key + std::to_string(counter);
-  while(!ds_.Put(put_reply_key, chirp_string)) {
+  while(!ds_.Get(put_reply_key).empty()) {
     counter++;
     put_reply_key = reply_key + std::to_string(counter);
   }
+  ds_.Put(put_reply_key, chirp_string);
 }
 
 bool ServiceLayer::Follow(const std::string& uname, const std::string& follow_uname) {
@@ -42,19 +43,36 @@ bool ServiceLayer::Follow(const std::string& uname, const std::string& follow_un
   return ds_.Put(uname, follow_uname);
 }
 
-std::vector<std::string> ServiceLayer::Read(const std::string& id) {
-  std::vector<std::string> replies;
+std::vector<ChirpObj> ServiceLayer::Read(const std::string& id) {
+  std::vector<ChirpObj> replies;
   std::string chirp_id = id;
   auto chirp = ds_.Get(chirp_id);
-  int counter = 0;
-  while(!chirp.empty()) {
+  if(!chirp.empty()) {
     ChirpObj c = ParseChirpString(chirp[0]);
-    replies.push_back(c.id());
-    std::string reply_id = c.id() + "-reply-" + std::to_string(counter);
-    chirp = ds_.Get(reply_id);
-    counter++;
+    replies.push_back(c);
+    std::string reply_key_base = c.id() + "-reply-";
+    ReadDfs(reply_key_base, &replies, 0);
   }
   return replies;
+}
+
+void ServiceLayer::ReadDfs(const std::string& key_base, std::vector<ChirpObj>* chirps, int counter) {
+  auto chirp_string = ds_.Get(key_base + std::to_string(counter));
+
+  //Base Case
+  if(chirp_string.empty()) {
+    return;
+  }
+
+  ChirpObj reply = ParseChirpString(chirp_string[0]);
+  chirps->push_back(reply);
+  
+  // c has a reply
+  std::string reply_key_base = reply.id() + "-reply-";
+  ReadDfs(reply_key_base, chirps, 0);
+
+  // another reply to same parent
+  ReadDfs(key_base, chirps, counter+1);
 }
 
 ChirpObj ServiceLayer::ParseChirpString(const std::string& chirp) {

@@ -33,7 +33,7 @@ class ServiceLayer {
   // Reads a Chirp thread from the given id
   // @id: the Chirp id to begin reading from
   // @ret: vector of Chirps forming the requested thread
-  std::vector<std::string> Read(const std::string& id);
+  std::vector<ChirpObj> Read(const std::string& id);
   
   // Streams Chirps from all followed users
   // @uname: the user requesting the monitor
@@ -52,6 +52,12 @@ class ServiceLayer {
   // @parent_id: id of the Chirp being replied to
   // @chirp_string: chirp to_string() of current ChirpObj
   void MakeReply(const std::string& parent_id, const std::string& chirp_string);
+
+  // Helper function to grab all replies for Read. Performs DFS
+  // @key: the key to Get() from DataStore
+  // @chirps: vector in which to store replies in DFS order
+  // @counter: tracker for which reponse to fetch
+  void ReadDfs(const std::string& key_base, std::vector<ChirpObj>* chirps, int counter);
 
   // TODO: Queue to backlog requests
 };

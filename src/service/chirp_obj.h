@@ -35,7 +35,7 @@ class ChirpObj {
   std::string to_string();
 
   // Helper method to print Chirp data
-  void print();
+  std::string print_string();
 
  private:
    std::string username_;

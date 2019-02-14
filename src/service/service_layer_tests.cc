@@ -104,15 +104,89 @@ TEST(ServiceLayerRead, BaseRead) {
   ChirpObj c1 = s.MakeChirp("c1", "c1 text", std::nullopt);
   ASSERT_FALSE(c1.id().empty());
   std::string c1_id = c1.id();
+  std::string c1_str = c1.to_string();
 
   ChirpObj c2 = s.MakeChirp("c2", "c2 text", c1_id);
   ASSERT_FALSE(c2.id().empty());
-  std::string c2_id = c2.id();
+  std::string c2_str = c2.to_string();
 
   auto replies = s.Read(c1_id);
   ASSERT_EQ(2, replies.size());
-  EXPECT_EQ(c1_id, replies[0]);
-  EXPECT_EQ(c2_id, replies[1]); 
+  EXPECT_EQ(c1_str, replies[0].to_string());
+  EXPECT_EQ(c2_str, replies[1].to_string()); 
+}
+
+// Tests Read method for ServiceLayer
+// Reads from a chirp that has no replies. Should return vector only containing the original chirp
+TEST(ServiceLayerRead, ReadNoReplies) {
+  ServiceLayer s;
+  s.Register("c1");
+
+  ChirpObj c1 = s.MakeChirp("c1", "c1 text", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+  std::string c1_id = c1.id();
+  std::string c1_str = c1.to_string();
+
+  auto replies = s.Read(c1_id);
+  ASSERT_EQ(1, replies.size());
+  EXPECT_EQ(c1_str, replies[0].to_string());
+}
+
+// Tests Read method for ServiceLayer
+// Inserts somes chirps, none replying
+// Reads from a chirp that has no replies. Should return vector only containing the original chirp
+TEST(ServiceLayerRead, ReadNoRepliesTwoUsers) {
+  ServiceLayer s;
+  s.Register("c1");
+  s.Register("c2");
+
+  ChirpObj c1 = s.MakeChirp("c1", "c1 text", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+  std::string c1_id = c1.id();
+  std::string c1_str = c1.to_string();
+
+  ChirpObj c2 = s.MakeChirp("c2", "c2 text", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  ChirpObj c3 = s.MakeChirp("c1", "c3 text", std::nullopt);
+  ASSERT_FALSE(c3.id().empty());
+
+  auto replies = s.Read(c1_id);
+  ASSERT_EQ(1, replies.size());
+  EXPECT_EQ(c1_str, replies[0].to_string());
+}
+
+// Tests Read method for ServiceLayer
+// Inserts chain of 3 replies and then 1 reply to root chirp.
+// Should return vector of replies ordered by 3 chain, then the 1 reply
+TEST(ServiceLayerRead, ReadChain) {
+  ServiceLayer s;
+  s.Register("c1");
+
+  ChirpObj c1 = s.MakeChirp("c1", "c1 text", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+  std::string c1_id = c1.id();
+  std::string c1_str = c1.to_string();
+
+  ChirpObj c2 = s.MakeChirp("c1", "c2 text", c1_id);
+  ASSERT_FALSE(c2.id().empty());
+  std::string c2_id = c2.id();
+  std::string c2_str = c2.to_string();
+
+  ChirpObj c3 = s.MakeChirp("c1", "c3 text", c2_id);
+  ASSERT_FALSE(c3.id().empty());
+  std::string c3_str = c3.to_string();
+
+  ChirpObj c4 = s.MakeChirp("c1", "c4 text", c1_id);
+  ASSERT_FALSE(c4.id().empty());
+  std::string c4_str = c4.to_string();
+
+  auto replies = s.Read(c1_id);
+  ASSERT_EQ(4, replies.size());
+  EXPECT_EQ(c1_str, replies[0].to_string());
+  EXPECT_EQ(c2_str, replies[1].to_string());
+  EXPECT_EQ(c3_str, replies[2].to_string());
+  EXPECT_EQ(c4_str, replies[3].to_string());
 }
 
 int main(int argc, char** argv) {

@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "service_layer_client.h"
 
 using chirp::Chirp;

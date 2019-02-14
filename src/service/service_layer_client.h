@@ -1,3 +1,6 @@
+#ifndef SRC_SERVICE_SERVICE_LAYER_CLIENT_H_
+#define SRC_SERVICE_SERVICE_LAYER_CLIENT_H_
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,8 +46,11 @@ class ServiceLayerClient {
 
   // Monitor command to send MonitorRequest and receive stream of MonitorReply
   // @uname: user requesting monitor
+  // @ret: vector of Chirps to be streamed
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
   std::unique_ptr<chirp::ServiceLayer::Stub> stub_;
 };
+
+#endif // SRC_SERVICE_SERVICE_LAYER_CLIENT_H_

@@ -103,5 +103,5 @@ ChirpObj ServiceLayer::ParseChirpString(const std::string& chirp) {
   }
   //data is now {seconds, useconds, username}
   
-  return ChirpObj(data[2], text, parent_id, id, std::stoi(data[0]), std::stoi(data[1]));
+  return ChirpObj(data[2], text, id, parent_id, std::stoi(data[0]), std::stoi(data[1]));
 }

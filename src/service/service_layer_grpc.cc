@@ -50,6 +50,7 @@ std::vector<ChirpObj> ServiceLayerObj::Read(const std::string& id) {
   if(!chirp.empty()) {
     ChirpObj c = ParseChirpString(chirp[0]);
     replies.push_back(c);
+    std::cout << "id: " << c.id() << std::endl;
     std::string reply_key_base = c.id() + "-reply-";
     ReadDfs(reply_key_base, &replies, 0);
   }
@@ -103,7 +104,7 @@ ChirpObj ServiceLayerObj::ParseChirpString(const std::string& chirp) {
   }
   //data is now {seconds, useconds, username}
 
-  return ChirpObj(data[2], text, parent_id, id, std::stoi(data[0]), std::stoi(data[1]));
+  return ChirpObj(data[2], text, id, parent_id, std::stoi(data[0]), std::stoi(data[1]));
 }
 /**
 int main(int argc, char** argv) {

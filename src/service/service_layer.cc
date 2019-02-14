@@ -40,7 +40,14 @@ bool ServiceLayer::Follow(const std::string& uname, const std::string& follow_un
   if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
     return false;
   }
-  return ds_.Put(uname, follow_uname);
+  std::string monitor_key_base = uname + "-follow-";
+  int counter = 0;
+  std::string key = monitor_key_base + std::to_string(counter); 
+  while(!ds_.Get(key).empty()) {
+    counter++;
+    key = monitor_key_base + std::to_string(counter);
+  }
+  return ds_.Put(key, follow_uname);
 }
 
 std::vector<ChirpObj> ServiceLayer::Read(const std::string& id) {

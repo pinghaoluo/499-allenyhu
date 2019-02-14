@@ -40,7 +40,14 @@ bool ServiceLayerObj::Follow(const std::string& uname, const std::string& follow
   if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
     return false;
   }
-  return ds_.Put(uname, follow_uname);
+  std::string monitor_key_base = uname + "-follow-";
+  int counter = 0;
+  std::string key = monitor_key_base + std::to_string(counter);
+  while(!ds_.Get(key).empty()) {
+    counter++;
+    key = monitor_key_base + std::to_string(counter);
+  }
+  return ds_.Put(key, follow_uname);
 }
 
 std::vector<ChirpObj> ServiceLayerObj::Read(const std::string& id) {
@@ -102,20 +109,7 @@ ChirpObj ServiceLayerObj::ParseChirpString(const std::string& chirp) {
   while(std::getline(ss, token, '-')) {
     data.push_back(token);
   }
-  //data is now {seconds, useconds, username}
 
+  //data is now {seconds, useconds, username}
   return ChirpObj(data[2], text, id, parent_id, std::stoi(data[0]), std::stoi(data[1]));
 }
-/**
-int main(int argc, char** argv) {
-  ServiceLayerObj s;
-
-  if(s.Register("allen")) {
-    std::cout << "register SUCCESS" << std::endl;
-  } else {
-    std::cout << "register FAILURE" << std::endl;
-  }
-
-  return 0;
-}
-*/

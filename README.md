@@ -52,4 +52,16 @@ To Follow: ./chirp -—user <username> -—follow <username>
 To Read: ./chirp -—read <chirp id>
 To Monitor: ./chirp -—user <username> -—monitor
 
-*** Commands will not work together (Must do one at a time)
+*** Commands will not work together (must do one at a time) ***
+
+TESTING
+Service_Layer: service/service_layer_tests.cc
+- make service_tests
+- ./service_tests
+
+Data_Store: store/data_store_tests.cc
+- make ds_tests
+- ./ds_tests
+
+No tests for cli because would be virtually pointless without GRPC 
+

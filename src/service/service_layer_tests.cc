@@ -76,6 +76,31 @@ TEST(ServiceLayerFollow, BaseFollow) {
 }
 
 // Tests Follow method for ServiceLayer
+// `follower` should now follow `root` and `test`
+TEST(ServiceLayerFollow, FollowTwoUsers) {
+  ServiceLayer s;
+  ASSERT_TRUE(s.Register("root"));
+  ASSERT_TRUE(s.Register("follower"));
+  ASSERT_TRUE(s.Register("test"));
+
+  EXPECT_TRUE(s.Follow("follower", "root"));
+  EXPECT_TRUE(s.Follow("follower", "test"));
+}
+
+// Tests Follow method for ServiceLayer
+// `follower` should now follow `root`
+// `test` should now follow `root` 
+TEST(ServiceLayerFollow, TwoFollowers) {
+  ServiceLayer s;
+  ASSERT_TRUE(s.Register("root"));
+  ASSERT_TRUE(s.Register("follower"));
+  ASSERT_TRUE(s.Register("test"));
+
+  EXPECT_TRUE(s.Follow("follower", "root"));
+  EXPECT_TRUE(s.Follow("test", "root"));
+}
+
+// Tests Follow method for ServiceLayer
 // Attempts to follow a non-existent user, should return false
 TEST(ServiceLayerFollow, FollowUnregisteredUser) {
   ServiceLayer s;

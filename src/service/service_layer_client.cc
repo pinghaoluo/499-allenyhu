@@ -17,7 +17,7 @@ using chirp::ServiceLayer;
 using chirp::Timestamp;
 using grpc::Channel;
 using grpc::ClientContext;
-using grpc::ClientReaderWriter;
+using grpc::ClientReader;
 using grpc::Status;
 
 ServiceLayerClient::ServiceLayerClient(std::shared_ptr<Channel> channel) : stub_(ServiceLayer::NewStub(channel)) {}
@@ -84,14 +84,20 @@ std::vector<ChirpObj> ServiceLayerClient::Read(const std::string& chirp_id) {
   return replies;
 }
 
-/**
-int main(int argc, char** argv) {
-  std::cout << "service client" << std::endl;
-  ServiceLayerClient s(grpc::CreateChannel("0.0.0.0:50002",
-		       grpc::InsecureChannelCredentials()));
+std::vector<ChirpObj> ServiceLayerClient::Monitor(const std::string& uname) {
+  MonitorRequest request;
+  request.set_username(uname);
+  ClientContext context;
+  std::shared_ptr<ClientReader<MonitorReply> > stream(stub_->monitor(&context, request)); 
 
-  std::cout << s.Register("allen") << std::endl;
-  std::cout << s.Chirp("allen", "allen says hi", std::nullopt).to_string() << std::endl;
-  return 0;
+  MonitorReply reply;
+  std::vector<ChirpObj> chirps;
+  while(stream->Read(&reply)) {
+    auto chirp = reply.chirp();
+    ChirpObj c(chirp.username(), chirp.text(), chirp.id(),
+	       chirp.parent_id(), chirp.timestamp().seconds(),
+	       chirp.timestamp().useconds());
+    chirps.push_back(c);
+  }
+  return chirps;
 }
-*/

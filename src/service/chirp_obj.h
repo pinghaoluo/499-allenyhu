@@ -13,8 +13,8 @@ class ChirpObj {
   ChirpObj(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id);
 
   // Constructor for Chirp object when receiving from server side
-  ChirpObj(const std::string& uname, const std::string& text, const std::string& parent_id,
-             const std::string& id, int seconds, int useconds);
+  ChirpObj(const std::string& uname, const std::string& text, const std::string& id,
+             const std::string& parent_id, int seconds, int useconds);
   
   // Getter for `username_`
   const std::string& username() const;

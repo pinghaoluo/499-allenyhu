@@ -85,12 +85,10 @@ void ServiceLayer::ReadDfs(const std::string& key_base, std::vector<ChirpObj>* c
 
 std::vector<ChirpObj> ServiceLayer::Monitor(const std::string& uname) {
   std::vector<std::string> follows = GetFollows(uname);
-  
   // Setting up DS to store monitor data
   for(const std::string& f : follows) {
     PutMonitorKey(uname, f); 
   }
-  
   std::vector<ChirpObj> chirps;
   std::string monitor_check_base = uname + "-monitor-check-";
   int counter = 0;
@@ -162,6 +160,7 @@ std::vector<std::string> ServiceLayer::GetFollows(const std::string& uname) {
     followers.push_back(check[0]);
     counter++;
     key = follow_key_base + std::to_string(counter);
+    check = ds_.Get(key);
   }
   return followers;
 }

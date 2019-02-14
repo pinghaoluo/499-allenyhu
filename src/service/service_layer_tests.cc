@@ -214,6 +214,112 @@ TEST(ServiceLayerRead, ReadChain) {
   EXPECT_EQ(c4_str, replies[3].to_string());
 }
 
+// Tests Monitor function for ServiceLayer
+// Due to lack of GRPC, will return vector of store monitor chirps
+// `follower` will follow `root` and call Monitor to set up info
+// `root` will chirp. `follower` will call Monitor again to retrieve new chirp
+// Should only return vector of `root`'s chirps on second call
+// Third Monitor call verifies old data is deleted upon retrieval
+TEST(ServiceLayerMonitor, BaseMonitor) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Follow("follower", "root");
+
+  auto check = s.Monitor("follower");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "test", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  check = s.Monitor("follower");
+  ASSERT_EQ(1, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+
+  check = s.Monitor("follower");
+  EXPECT_TRUE(check.empty());
+}
+
+// Tests Monitor function for ServiceLayer
+// Due to lack of GRPC, will return vector of store monitor chirps
+// `follower` will follow `root` and call Monitor to set up info
+// `root` will chirp twice. `follower` will call Monitor again to retrieve new chirps
+// Should only return vector of `root`'s chirps on second call
+TEST(ServiceLayerMonitor, BaseMonitorTwoChirps) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Follow("follower", "root");
+
+  auto check = s.Monitor("follower");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "test", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("root", "test2", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  check = s.Monitor("follower");
+  ASSERT_EQ(2, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+  EXPECT_EQ(c2.to_string(), check[1].to_string());
+}
+
+// Tests Monitor function for ServiceLayer
+// Due to lack of GRPC, will return vector of store monitor chirps
+// `follower` will follow `root` and `test` and call Monitor to set up info
+// `root` and `test` will chirp. `follower` will call Monitor again to retrieve new chirps
+// Should only return vector of `root` and `test`'s chirps on second call
+TEST(ServiceLayerMonitor, BaseMonitorTwoFollowed) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Register("test");
+  s.Follow("follower", "root");
+  s.Follow("follower", "test");
+
+  auto check = s.Monitor("follower");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "root", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("test", "test", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  check = s.Monitor("follower");
+  ASSERT_EQ(2, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+  EXPECT_EQ(c2.to_string(), check[1].to_string());
+}
+
+// Tests Monitor function for ServiceLayer
+// Due to lack of GRPC, will return vector of store monitor chirps
+// `follower` will follow `root` and call Monitor to set up info
+// `root` and `test` will chirp. `follower` will call Monitor again to retrieve new chirps
+// Should only return vector of `root`'s chirps on second call
+TEST(ServiceLayerMonitor, BaseMonitorOnlyOneFollowed) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Register("test");
+  s.Follow("follower", "root");
+
+  auto check = s.Monitor("follower");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "root", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("test", "test", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  check = s.Monitor("follower");
+  ASSERT_EQ(1, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+}
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

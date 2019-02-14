@@ -1,4 +1,5 @@
 #include <string>
+#include <unistd.h>
 
 #include <gflags/gflags.h>
 
@@ -34,4 +35,7 @@ class CliParser {
   
   // Helper function to parse read command
   std::string ParseRead(const std::string& chirp_id);
+  
+  // Helper function to parse monitor command
+  std::string ParseMonitor(const std::string& uname);
 };

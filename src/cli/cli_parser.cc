@@ -30,6 +30,10 @@ std::string CliParser::Parse(int argc, char** argv) {
   if(!FLAGS_read.empty()) {
     return ParseRead(FLAGS_read);
   }
+
+  if(FLAGS_monitor) {
+    return ParseMonitor(FLAGS_user);
+  }
   return "";
 }
 
@@ -66,7 +70,7 @@ std::string CliParser::ParseChirp(const std::string& uname, const std::string& t
 std::string CliParser::ParseFollow(const std::string& uname, const std::string& to_follow_user) {
   if(!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
        FLAGS_read.empty() && !FLAGS_monitor)) {
-    return "Cannot Reply, Read, or Monitor with Follow.";
+    return "Cannot Register, Reply, Read, or Monitor with Follow.";
   }
   if(uname.empty()) {
     return "Must be logged in to perform actions.";
@@ -94,4 +98,23 @@ std::string CliParser::ParseRead(const std::string& chirp_id) {
     s += "\n";
   }
   return s;
+}
+
+std::string CliParser::ParseMonitor(const std::string& uname) {
+  if(!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+       FLAGS_read.empty() && FLAGS_follow.empty())) {
+    return "Cannot Register, Reply, Read, or Follow with Monitor.";
+  }
+  if(uname.empty()) {
+    return "Must be logged in to perform actions.";
+  }
+  unsigned int time_int = 500000;
+  while(true) {
+    std::vector<ChirpObj> chirps = service_.Monitor(uname);
+    for(auto c : chirps) {
+      std::cout << c.print_string() << std::endl;
+    }
+    usleep(time_int);
+  }
+  return "Monitor complete";
 }

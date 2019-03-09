@@ -13,11 +13,13 @@ class ChirpObj {
   ChirpObj();
 
   // Constructor for Chirp object when sending from user side
-  ChirpObj(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id);
+  ChirpObj(const std::string& uname, const std::string& text,
+           const std::optional<std::string>& parent_id);
 
   // Constructor for Chirp object when receiving from server side
-  ChirpObj(const std::string& uname, const std::string& text, const std::string& id,
-             const std::string& parent_id, int seconds, int useconds);
+  ChirpObj(const std::string& uname, const std::string& text,
+           const std::string& id, const std::string& parent_id,
+           int seconds, int useconds);
   
   // Getter for `username_`
   const std::string& username() const;
@@ -38,7 +40,7 @@ class ChirpObj {
   std::string to_string();
 
   // Helper method to print Chirp data
-  std::string print_string();
+  const std::string print_string() const;
 
  private:
    std::string username_;

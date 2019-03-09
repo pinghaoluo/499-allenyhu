@@ -5,13 +5,8 @@ DataStore::DataStore() : table_(), lock_() {}
 bool DataStore::Put(const std::string& key, const std::string& val) {
   std::lock_guard<std::mutex> lg(lock_);
 
-  if(table_.find(key) != table_.end()) {
-    table_.at(key).push_back(val);
-    return true;
-  } else {
-    table_[key].push_back(val);
-    return true;
-  }
+  table_[key].push_back(val);
+  return true;
 }
 
 std::vector<std::string> DataStore::Get(const std::string& key) {

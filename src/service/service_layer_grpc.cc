@@ -1,7 +1,8 @@
 #include "service_layer_grpc.h"
 
-ServiceLayerObj::ServiceLayerObj() : ds_(grpc::CreateChannel("0.0.0.0:50000",
-			           grpc::InsecureChannelCredentials())) {}
+ServiceLayerObj::ServiceLayerObj() 
+    : ds_(grpc::CreateChannel("0.0.0.0:50000",
+          grpc::InsecureChannelCredentials())) {}
 
 bool ServiceLayerObj::Register(const std::string& uname) {
   if(uname.empty() || !ds_.Get(uname).empty()) {

@@ -1,6 +1,6 @@
-#include "service_layer.h"
-
 #include <gtest/gtest.h>
+
+#include "service_layer.h"
 
 // Tests default constructor for ServiceLayer
 TEST(ServiceLayerCreate, NewServiceLayer) {

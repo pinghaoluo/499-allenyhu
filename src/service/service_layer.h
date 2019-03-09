@@ -44,6 +44,18 @@ class ServiceLayer {
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
+  // used for follow storage in store
+  const std::string kFollowKey = "-follow-"; 
+  
+  // used for monitor storage in store
+  const std::string kMonitorKey = "-monitor-";
+
+  // used for monitor checking in store
+  const std::string kMonitorCheckKey = "-monitor-check-";
+
+  // used for reply storage in store 
+  const std::string kReplyKey = "-reply-"; 
+  
   DataStore ds_; // private DataStore for testing purposes
 
   // Helper function to parse data from DataStore

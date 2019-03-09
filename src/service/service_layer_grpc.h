@@ -44,7 +44,7 @@ class ServiceLayerObj {
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
-  DataStoreClient ds_; // private DataStore for testing purposes
+  DataStoreClient ds_; // client to connect with DataStore Server 
 
   // Helper function to parse data from DataStore
   // @chirp: the string rep of a ChirpObj stored in the DataStore

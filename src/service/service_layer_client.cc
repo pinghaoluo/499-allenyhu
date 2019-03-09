@@ -18,7 +18,8 @@ using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::Status;
 
-ServiceLayerClient::ServiceLayerClient(std::shared_ptr<Channel> channel) : stub_(ServiceLayer::NewStub(channel)) {}
+ServiceLayerClient::ServiceLayerClient(std::shared_ptr<Channel> channel)
+    : stub_(ServiceLayer::NewStub(channel)) {}
 
 bool ServiceLayerClient::Register(const std::string& uname) {
   RegisterRequest request;
@@ -31,8 +32,9 @@ bool ServiceLayerClient::Register(const std::string& uname) {
   return status.ok();
 }
 
-ChirpObj ServiceLayerClient::Chirp(const std::string& uname, const std::string& text, 
-				const std::optional<std::string>& parent_id) {
+ChirpObj ServiceLayerClient::Chirp(const std::string& uname,
+                                   const std::string& text,
+                                   const std::optional<std::string>& parent_id) {
   ChirpRequest request;
   request.set_username(uname);
   request.set_text(text);
@@ -45,8 +47,8 @@ ChirpObj ServiceLayerClient::Chirp(const std::string& uname, const std::string& 
   if(status.ok()) {
     auto chirp = reply.chirp();
     return ChirpObj(chirp.username(), chirp.text(), chirp.id(),
-		 chirp.parent_id(), chirp.timestamp().seconds(),
-		 chirp.timestamp().useconds());
+                    chirp.parent_id(), chirp.timestamp().seconds(),
+                    chirp.timestamp().useconds());
   } else {
     return ChirpObj();
   }
@@ -73,7 +75,7 @@ std::vector<ChirpObj> ServiceLayerClient::Read(const std::string& chirp_id) {
 
   Status status = stub_->read(&context, request, &reply);
   std::vector<ChirpObj> replies;
-  for(auto chirp : reply.chirps()) {
+  for(const auto &chirp : reply.chirps()) {
     ChirpObj o(chirp.username(), chirp.text(), chirp.id(),
              chirp.parent_id(), chirp.timestamp().seconds(),
              chirp.timestamp().useconds());

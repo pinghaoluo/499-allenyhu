@@ -13,14 +13,20 @@ DEFINE_string(read, "", "returns chirp thread starting with given chirp id");
 DEFINE_bool(monitor, false, "starts monitoring for all following accounts' chirps");
 
 CliParser::CliParser() : service_(grpc::CreateChannel("0.0.0.0:50002",
-			          grpc::InsecureChannelCredentials())) {}
+                                  grpc::InsecureChannelCredentials())) {}
 
 std::string CliParser::Parse(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   if(!FLAGS_register.empty()) {
     return ParseRegister(FLAGS_register);
   }
-  
+
+  if (FLAGS_user.empty()) {
+    return "User cannot be blank.";
+  } else {
+    std::cout << FLAGS_user << std::endl;
+  }
+
   if(!FLAGS_chirp.empty()) {
     return ParseChirp(FLAGS_user, FLAGS_chirp, FLAGS_reply);
   }
@@ -52,7 +58,7 @@ std::string CliParser::ParseRegister(const std::string& uname) {
 }
 
 std::string CliParser::ParseChirp(const std::string& uname, const std::string& text,
-		                  const std::string& reply_id) {
+                                  const std::string& reply_id) {
   if(!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor)) {
     return "Cannot Follow, Read, or Monitor with Chirp.";
   }
@@ -95,10 +101,9 @@ std::string CliParser::ParseRead(const std::string& chirp_id) {
   }
 
   auto replies = service_.Read(chirp_id);
-  std::string s = "";
-  for(auto r : replies) {
-    s += r.print_string();
-    s += "\n";
+  std::string s;
+  for(const auto r : replies) {
+    s += r.print_string() + "\n";
   }
   return s;
 }
@@ -111,15 +116,14 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
   if(uname.empty()) {
     return "Must be logged in to perform actions.";
   }
-  unsigned int time_int = 500000;
+
   while(true) {
     std::vector<ChirpObj> chirps = service_.Monitor(uname);
-    for(auto c : chirps) {
+    for(const auto c : chirps) {
       std::cout << c.print_string() << std::endl;
     }
 
-    // Sleeps loop to make output more readable
-    usleep(time_int);
+    usleep(kMonitorLoopDelay);
   }
   return "Monitor complete";
 }

@@ -77,7 +77,7 @@ class ServiceLayerServiceImpl final : public ServiceLayer::Service {
 
   Status read(ServerContext* context, const ReadRequest* request, ReadReply* response) override {
     std::vector<ChirpObj> reply_chirps = service_.Read(request->chirp_id());
-    for(auto c : reply_chirps) {
+    for(const auto &c : reply_chirps) {
       Chirp* reply = response->add_chirps();
       reply->set_username(c.username());
       reply->set_text(c.text());

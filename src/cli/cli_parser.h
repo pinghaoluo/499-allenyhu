@@ -43,6 +43,8 @@ class CliParser {
   
   // Helper function to parse monitor command
   std::string ParseMonitor(const std::string& uname);
+
+  const int kMonitorLoopDelay = 500000;
 };
 
 #endif //SRC_CLI_CLI_PARSER_H_

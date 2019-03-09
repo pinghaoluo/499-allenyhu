@@ -17,6 +17,10 @@
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 
+CLI_DIR = cli
+DS_DIR = store
+SERVICE_DIR = service
+
 GTEST_LIB = gtest
 GFLAGS_LIB = gflags
 GTEST_INCLUDE = /usr/local/include
@@ -25,7 +29,7 @@ GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -l $(GFLAGS_LIB) -pthread
 
 CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
-CXXFLAGS += -std=c++17 -g -Wall
+CXXFLAGS += -std=c++17 -g -Wall 
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -43,9 +47,6 @@ PROTOS_PATH = ../protos
 
 vpath %.proto $(PROTOS_PATH)
 
-CLI_DIR = ./cli
-DS_DIR = ./store
-SERVICE_DIR = ./service
 
 all: chirp data_store_server service_layer_server ds_tests service_tests
 
@@ -85,7 +86,7 @@ service_layer.o: $(SERVICE_DIR)/service_layer.cc
 service_layer_tests.o: $(SERVICE_DIR)/service_layer_tests.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
-chirp: main.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o 
+chirp: $(CLI_DIR)/chirp.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o 
 	$(CXX) $^ $(LDFLAGS) -lgflags -o $@
 
 .PRECIOUS: %.grpc.pb.cc

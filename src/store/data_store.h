@@ -20,12 +20,12 @@ class DataStore {
 
   // Returns vector<string> storing all values from requested key
   // @key: the key to be looked up
-  // @ret: the vector at key`
+  // @ret: the vector at `key` that stores all values associated with `key`
   std::vector<std::string> Get(const std::string& key);
 
   // Deletes the value at given `key`
   // @key: the key of the key value pair to be removed
-  // @ret: true on successful removal; false otherwise
+  // @ret: true on successful removal
   bool DeleteKey(const std::string& key);
  
  private:

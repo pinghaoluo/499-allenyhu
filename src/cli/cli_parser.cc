@@ -21,12 +21,6 @@ std::string CliParser::Parse(int argc, char** argv) {
     return ParseRegister(FLAGS_register);
   }
 
-  if (FLAGS_user.empty()) {
-    return "User cannot be blank.";
-  } else {
-    std::cout << FLAGS_user << std::endl;
-  }
-
   if(!FLAGS_chirp.empty()) {
     return ParseChirp(FLAGS_user, FLAGS_chirp, FLAGS_reply);
   }
@@ -42,6 +36,11 @@ std::string CliParser::Parse(int argc, char** argv) {
   if(FLAGS_monitor) {
     return ParseMonitor(FLAGS_user);
   }
+
+  if (!FLAGS_user.empty()) {
+    return "Username cannot be blank.";
+  }
+
   return "";
 }
 

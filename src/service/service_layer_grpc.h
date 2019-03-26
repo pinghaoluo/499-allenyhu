@@ -44,6 +44,18 @@ class ServiceLayerObj {
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
+  // used for follow storage in store
+  const std::string kFollowKey_ = "-follow-";
+
+  // used for monitor storage in store
+  const std::string kMonitorKey_ = "-monitor-";
+
+  // used for monitor checking in store
+  const std::string kMonitorCheckKey_ = "-monitor-check-";
+
+  // used for reply storage in store
+  const std::string kReplyKey_ = "-reply-";
+
   DataStoreClient ds_; // client to connect with DataStore Server 
 
   // Helper function to parse data from DataStore
@@ -81,8 +93,6 @@ class ServiceLayerObj {
   // @uname: the user who is monitoring another
   // @chirp_string: data of Chirp just made by a user `uname` is following
   void UpdateMonitor(const std::string& uname, const std::string& chirp_string);
-
-  // TODO: Queue to backlog requests
 };
 
 #endif // SRC_SERVICE_SERVICE_LAYER_GRPC_H_

@@ -28,7 +28,7 @@ ChirpObj ServiceLayer::MakeChirp(const std::string& uname, const std::string& te
 
 void ServiceLayer::MakeReply(const std::string& parent_id,
                              const std::string& chirp_string) {
-  std::string reply_key = parent_id + kReplyKey;
+  std::string reply_key = parent_id + kReplyKey_;
   int counter = 0;
   std::string put_reply_key = reply_key + std::to_string(counter);
   while(!ds_.Get(put_reply_key).empty()) {
@@ -43,7 +43,7 @@ bool ServiceLayer::Follow(const std::string& uname,
   if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
     return false;
   }
-  std::string monitor_key_base = uname + kFollowKey;
+  std::string monitor_key_base = uname + kFollowKey_;
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter); 
 
@@ -61,7 +61,7 @@ std::vector<ChirpObj> ServiceLayer::Read(const std::string& id) {
   if(!chirp.empty()) {
     ChirpObj c = ParseChirpString(chirp[0]);
     replies.push_back(c);
-    std::string reply_key_base = c.id() + kReplyKey;
+    std::string reply_key_base = c.id() + kReplyKey_;
     ReadDfs(reply_key_base, &replies, 0);
   }
   return replies;
@@ -78,7 +78,7 @@ void ServiceLayer::ReadDfs(const std::string& key_base, std::vector<ChirpObj>* c
   chirps->push_back(reply);
   
   // reply has a reply
-  std::string reply_key_base = reply.id() + kReplyKey;
+  std::string reply_key_base = reply.id() + kReplyKey_;
   ReadDfs(reply_key_base, chirps, 0);
 
   // another reply to same parent
@@ -93,7 +93,7 @@ std::vector<ChirpObj> ServiceLayer::Monitor(const std::string& uname) {
   }
   
   std::vector<ChirpObj> chirps;
-  std::string monitor_check_base = uname + kMonitorCheckKey;
+  std::string monitor_check_base = uname + kMonitorCheckKey_;
   int counter = 0;
   std::string key = monitor_check_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
@@ -110,7 +110,7 @@ std::vector<ChirpObj> ServiceLayer::Monitor(const std::string& uname) {
 }
 
 void ServiceLayer::PutMonitorKey(const std::string& uname, const std::string& followed_user) {
-  std::string monitor_key_base = followed_user + kMonitorKey;
+  std::string monitor_key_base = followed_user + kMonitorKey_;
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);
@@ -129,7 +129,7 @@ void ServiceLayer::PutMonitorKey(const std::string& uname, const std::string& fo
 }
 
 void ServiceLayer::CheckMonitor(const std::string& uname, const std::string& chirp_string) {
-  std::string monitor_key_base = uname + "-monitor-";
+  std::string monitor_key_base = uname + kMonitorKey_;
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);

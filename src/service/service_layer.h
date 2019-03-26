@@ -45,16 +45,16 @@ class ServiceLayer {
 
  private:
   // used for follow storage in store
-  const std::string kFollowKey = "-follow-"; 
+  const std::string kFollowKey_ = "-follow-"; 
   
   // used for monitor storage in store
-  const std::string kMonitorKey = "-monitor-";
+  const std::string kMonitorKey_ = "-monitor-";
 
   // used for monitor checking in store
-  const std::string kMonitorCheckKey = "-monitor-check-";
+  const std::string kMonitorCheckKey_ = "-monitor-check-";
 
   // used for reply storage in store 
-  const std::string kReplyKey = "-reply-"; 
+  const std::string kReplyKey_ = "-reply-"; 
   
   DataStore ds_; // private DataStore for testing purposes
 

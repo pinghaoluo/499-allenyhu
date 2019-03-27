@@ -30,16 +30,18 @@ ChirpObj ServiceLayerObj::MakeChirp(const std::string& uname, const std::string&
 }
 
 void ServiceLayerObj::MakeReply(const std::string& parent_id, const std::string& chirp_string) {
-  std::string reply_key = parent_id + kReplyKey_;
+  // Impkementation based on feedback from Ralph Chung
+  std::string reply_counter_key = parent_id + kReplyCounterKey_;
+  auto reply_count = ds_.Get(reply_counter_key);
   int counter = 0;
-  std::string put_reply_key = reply_key + std::to_string(counter);
-  
-  while(!ds_.Get(put_reply_key).empty()) {
-    counter++;
-    put_reply_key = reply_key + std::to_string(counter);
+  if (!reply_count.empty()) {
+    counter = std::stoi(reply_count[0]);
   }
-  
+
+  std::string reply_key = parent_id + kReplyKey_;
+  std::string put_reply_key = reply_key + std::to_string(counter);
   ds_.Put(put_reply_key, chirp_string);
+  ds_.Put(reply_counter_key, std::to_string(counter + 1));
 }
 
 bool ServiceLayerObj::Follow(const std::string& uname, const std::string& follow_uname) {
@@ -185,22 +187,22 @@ std::vector<std::string> ServiceLayerObj::GetFollows(const std::string& uname) {
 }
 
 ChirpObj ServiceLayerObj::ParseChirpString(const std::string& chirp) {
-  std::string s;
-  std::size_t id_pos = chirp.find("|");
-  int id_len = std::stoi(chirp.substr(0, id_pos));
-  std::string id = chirp.substr(id_pos+1, id_len);
-  s = chirp.substr(id_pos+id_len+1);
+  std::string_view chirp_view(chirp);
+  std::size_t id_pos = chirp_view.find("|");
+  int id_len = std::stoi(std::string(chirp_view.substr(0, id_pos)));
+  std::string id = std::string(chirp_view.substr(id_pos+1, id_len));
+  chirp_view.remove_prefix(id_pos+id_len+1);
 
-  std::size_t text_pos = s.find("|");
-  int text_len = std::stoi(s.substr(0, text_pos));
-  std::string text = s.substr(text_pos+1, text_len);
-  s = s.substr(text_pos+text_len+1);
+  std::size_t text_pos = chirp_view.find("|");
+  int text_len = std::stoi(std::string(chirp_view.substr(0, text_pos)));
+  std::string text = std::string(chirp_view.substr(text_pos+1, text_len));
+  chirp_view.remove_prefix(text_pos+text_len+1);
 
   std::string parent_id = "";
-  if(!s.empty()) {
-    std::size_t parent_pos = s.find("|");
-    int parent_len = std::stoi(s.substr(0, parent_pos));
-    parent_id = s.substr(parent_pos+1, parent_len);
+  if(!chirp_view.empty()) {
+    std::size_t parent_pos = chirp_view.find("|");
+    int parent_len = std::stoi(std::string(chirp_view.substr(0, parent_pos)));
+    parent_id = std::string(chirp_view.substr(parent_pos+1, parent_len));
   }
 
   //Parse for timestamp and username from id
@@ -210,7 +212,7 @@ ChirpObj ServiceLayerObj::ParseChirpString(const std::string& chirp) {
   while(std::getline(ss, token, '-')) {
     data.push_back(token);
   }
-
   //data is now {seconds, useconds, username}
+
   return ChirpObj(data[2], text, id, parent_id, std::stoi(data[0]), std::stoi(data[1]));
 }

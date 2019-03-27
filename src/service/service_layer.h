@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 
@@ -44,17 +45,20 @@ class ServiceLayer {
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
-  // used for follow storage in store
+  // Used for follow storage in store
   const std::string kFollowKey_ = "-follow-"; 
   
-  // used for monitor storage in store
+  // Used for monitor storage in store
   const std::string kMonitorKey_ = "-monitor-";
 
-  // used for monitor checking in store
+  // Used for monitor checking in store
   const std::string kMonitorCheckKey_ = "-monitor-check-";
 
-  // used for reply storage in store 
+  // Used for reply storage in store 
   const std::string kReplyKey_ = "-reply-"; 
+
+  // Used for counting number of replies to a chirp in store
+  const std::string kReplyCounterKey_ = "-reply-counter";
   
   DataStore ds_; // private DataStore for testing purposes
 

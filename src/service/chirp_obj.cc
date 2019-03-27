@@ -13,26 +13,6 @@ ChirpObj::ChirpObj(const std::string& uname, const std::string& text, const std:
 		   const std::string& parent_id, int seconds, int useconds) 
     : username_(uname), text_(text), id_(id), parent_id_(parent_id), time_(seconds, useconds) {}
 
-const std::string& ChirpObj::username() const {
-  return username_;
-}
-
-const std::string& ChirpObj::text() const {
-  return text_;
-}
-
-const std::string& ChirpObj::id() const {
-  return id_;
-}
-
-const std::string& ChirpObj::parent_id() const {
-  return parent_id_;
-}
-
-const TimeStamp& ChirpObj::time() const {
-  return time_;
-}
-
 std::string ChirpObj::to_string() {
   std::string s; 
   s += std::to_string(id_.length()) + "|" + id_;

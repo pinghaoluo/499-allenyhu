@@ -29,7 +29,7 @@ GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -l $(GFLAGS_LIB) -pthread
 
 CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
-CXXFLAGS += -std=c++17 -g -Wall 
+CXXFLAGS += -std=c++17 -g -Wall -I. 
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -59,7 +59,7 @@ data_store.o: $(DS_DIR)/data_store.cc
 data_store_client: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o data_store.o
+data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o $(DS_DIR)/data_store_impl.o data_store.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 data_store_tests.o: $(DS_DIR)/data_store_tests.cc
@@ -74,7 +74,7 @@ service_layer_grpc: $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj
 service_layer_client: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-service_layer_server: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_server.o $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
+service_layer_server: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_server.o $(SERVICE_DIR)/service_layer_impl.o $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 service_tests: $(SERVICE_DIR)/service_layer.o $(SERVICE_DIR)/service_layer_tests.o data_store.o $(SERVICE_DIR)/chirp_obj.o

@@ -144,7 +144,7 @@ void ServiceLayer::CheckMonitor(const std::string& uname, const std::string& chi
 }
 
 void ServiceLayer::UpdateMonitor(const std::string& uname, const std::string& chirp_string) {
-  std::string monitor_check_base = uname + "-monitor-check-";
+  std::string monitor_check_base = uname + kMonitorCheckKey_;
   int counter = 0;
   std::string key = monitor_check_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key); 
@@ -159,7 +159,7 @@ void ServiceLayer::UpdateMonitor(const std::string& uname, const std::string& ch
 
 std::vector<std::string> ServiceLayer::GetFollows(const std::string& uname) {
   std::vector<std::string> followers;
-  std::string follow_key_base = uname + "-follow-";
+  std::string follow_key_base = uname + kFollowKey_; 
   int counter = 0;
   std::string key = follow_key_base + std::to_string(counter);
   std::vector<std::string> check = ds_.Get(key);

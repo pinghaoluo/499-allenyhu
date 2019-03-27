@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "chirp_obj.h"
-#include "../store/data_store_client.h"
+#include "store/data_store_client.h"
 
 // Model class for GRPC version of service layer component of Chirp system
 class ServiceLayerObj {

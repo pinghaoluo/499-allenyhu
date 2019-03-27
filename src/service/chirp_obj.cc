@@ -44,11 +44,3 @@ TimeStamp::TimeStamp() {
 }
 
 TimeStamp::TimeStamp(int seconds, int useconds) : seconds_(seconds), useconds_(useconds) {}
-
-const int& TimeStamp::seconds() const {
-  return seconds_;
-}
-
-const int& TimeStamp::useconds() const{
-  return useconds_;
-}

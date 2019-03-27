@@ -6,7 +6,7 @@
 
 #include <gflags/gflags.h>
 
-#include "../service/service_layer_client.h"
+#include "service/service_layer_client.h"
 
 // GFLAG declarations for CLI args
 DECLARE_string(user);

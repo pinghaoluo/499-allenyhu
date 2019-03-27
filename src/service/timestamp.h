@@ -10,10 +10,14 @@ class TimeStamp {
   TimeStamp(int seconds, int useconds);
   
   // Getter for 'seconds_'
-  const int& seconds() const;
+  inline const int& seconds() const {
+    return seconds_;
+  }
 
   // Getter for 'useconds_'
-  const int& useconds() const;
+  inline const int& useconds() const {
+    return useconds_;
+  }
 
  private:
   int seconds_;

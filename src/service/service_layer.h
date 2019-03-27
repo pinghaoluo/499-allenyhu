@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "chirp_obj.h"
-#include "../store/data_store.h"
+#include "store/data_store.h"
 
 // Model class for service layer component of Chirp system
 class ServiceLayer {
@@ -93,8 +93,6 @@ class ServiceLayer {
   // @uname: the user who is monitoring another
   // @chirp_string: data of Chirp just made by a user `uname` is following
   void UpdateMonitor(const std::string& uname, const std::string& chirp_string);
-
-  // TODO: Queue to backlog requests
 };
 
 #endif // SRC_SERVICE_SERVICE_LAYER_H_

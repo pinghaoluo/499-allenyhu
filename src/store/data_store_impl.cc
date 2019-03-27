@@ -24,7 +24,6 @@ KeyValueStoreServiceImpl::KeyValueStoreServiceImpl() : store_() {}
 
   Status KeyValueStoreServiceImpl::get(ServerContext* context, 
 	     ServerReaderWriter<GetReply, GetRequest>* stream) {
-    std::vector<GetRequest> received_requests;
     GetRequest req;
     
     while (stream->Read(&req)) {

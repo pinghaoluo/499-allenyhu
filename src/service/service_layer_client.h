@@ -36,7 +36,7 @@ class ServiceLayerClient {
   // Follow command to send FollowRequest and receive FollowReply
   // @uname: user logged in
   // @to_follow_user: user that `uname` will follow
-  // @ret: ture or false based on success
+  // @ret: true or false based on success
   bool Follow(const std::string& uname, const std::string& to_follow_user);
 
   // Read command to send ReadRequest and receive ReadReply

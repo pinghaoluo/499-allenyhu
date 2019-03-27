@@ -23,7 +23,7 @@ class DataStoreClient {
   // Put command to send PutRequest and receive PutReply
   // @key: key to be put
   // @val: val to be put at 'key'
-  // @ret: true or false based on success
+  // @ret: true on successful insertion
   bool Put(const std::string& key, const std::string& val);
 
   // Get command to send GetRequest and receive GetReply
@@ -33,7 +33,7 @@ class DataStoreClient {
 
   // DeleteKey command to send DeleteRequest and receive DeleteReply
   // @key: key to be deleted
-  // @ret: ture or false based on success
+  // @ret: true on successful deletetion
   bool DeleteKey(const std::string& key);
  
  private:

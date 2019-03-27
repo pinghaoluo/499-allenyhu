@@ -15,7 +15,7 @@ class DataStore {
   // Adds key value pair to table_
   // @key: key under which new `val` will be added
   // @val: the value to be added
-  // @ret: true on successful insertion; false otherwise
+  // @ret: true on successful insertion
   bool Put(const std::string& key, const std::string& val);
 
   // Returns vector<string> storing all values from requested key

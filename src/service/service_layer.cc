@@ -15,20 +15,21 @@ ChirpObj ServiceLayer::MakeChirp(const std::string& uname, const std::string& te
     return ChirpObj();
   }
 
-  ChirpObj c(uname, text, reply_id);
-  if(ds_.Put(c.id(), c.to_string())) {
-    if(!c.parent_id().empty()) {
-      MakeReply(c.parent_id(), c.to_string());
+  ChirpObj chirp(uname, text, reply_id);
+  if(ds_.Put(chirp.id(), chirp.to_string())) {
+    // Check for reply
+    if(!chirp.parent_id().empty()) {
+      MakeReply(chirp.parent_id(), chirp.to_string());
     }
-    CheckMonitor(uname, c.to_string());
-    return c;
+    CheckForMonitorKey(uname, chirp.to_string());
+    return chirp;
   }
   return ChirpObj();
 }
 
 void ServiceLayer::MakeReply(const std::string& parent_id,
                              const std::string& chirp_string) {
-  // Impkementation based on feedback from Ralph Chung
+  // Implementation based on feedback from Ralph Chung
   std::string reply_counter_key = parent_id + kReplyCounterKey_;
   auto reply_count = ds_.Get(reply_counter_key);
   int counter = 0;
@@ -36,26 +37,33 @@ void ServiceLayer::MakeReply(const std::string& parent_id,
     counter = std::stoi(reply_count[0]);
   }
 
-  std::string reply_key = parent_id + kReplyKey_;
-  std::string put_reply_key = reply_key + std::to_string(counter);
+  std::string put_reply_key = parent_id + kReplyKey_ + std::to_string(counter);
   ds_.Put(put_reply_key, chirp_string);
   ds_.Put(reply_counter_key, std::to_string(counter + 1));
 }
 
 bool ServiceLayer::Follow(const std::string& uname,
                           const std::string& follow_uname) {
+  // Implementation based on feedback from Ralph Chang
   if(ds_.Get(uname).empty() || ds_.Get(follow_uname).empty()) {
     return false;
   }
-  std::string monitor_key_base = uname + kFollowKey_;
+  
+  std::string follow_counter_key = uname + kFollowCounterKey_;
+  auto follow_count = ds_.Get(follow_counter_key);
   int counter = 0;
-  std::string key = monitor_key_base + std::to_string(counter); 
-
-  while(!ds_.Get(key).empty()) {
-    counter++;
-    key = monitor_key_base + std::to_string(counter);
+  if (!follow_count.empty()) {
+    counter = std::stoi(follow_count[0]);
   }
-  return ds_.Put(key, follow_uname);
+
+  std::string key = uname + kFollowKey_ + std::to_string(counter); 
+  
+  bool check = ds_.Put(key, follow_uname);
+  if (check) {
+    // Only want to update counter on successful Put
+    ds_.Put(follow_counter_key, std::to_string(counter + 1));
+  }
+  return check;
 }
 
 std::vector<ChirpObj> ServiceLayer::Read(const std::string& id) {
@@ -74,24 +82,26 @@ std::vector<ChirpObj> ServiceLayer::Read(const std::string& id) {
 void ServiceLayer::ReadDfs(const std::string& key_base, std::vector<ChirpObj>* chirps, int counter) {
   auto chirp_string = ds_.Get(key_base + std::to_string(counter));
 
-  //Base Case
+  // Base Case
   if(chirp_string.empty()) {
     return;
   }
+
   ChirpObj reply = ParseChirpString(chirp_string[0]);
   chirps->push_back(reply);
   
-  // reply has a reply
+  // Reply has a reply
   std::string reply_key_base = reply.id() + kReplyKey_;
   ReadDfs(reply_key_base, chirps, 0);
 
-  // another reply to same parent
+  // Another reply to same parent
   ReadDfs(key_base, chirps, counter+1);
 }
 
 std::vector<ChirpObj> ServiceLayer::Monitor(const std::string& uname) {
-  std::vector<std::string> follows = GetFollows(uname);
-  // Setting up DS to store monitor data
+  std::vector<std::string> follows = GetUsersFollowed(uname);
+  
+  // Setting up DS with a key to store monitor data
   for(const std::string& f : follows) {
     PutMonitorKey(uname, f); 
   }
@@ -132,7 +142,7 @@ void ServiceLayer::PutMonitorKey(const std::string& uname, const std::string& fo
   ds_.Put(key, uname);
 }
 
-void ServiceLayer::CheckMonitor(const std::string& uname, const std::string& chirp_string) {
+void ServiceLayer::CheckForMonitorKey(const std::string& uname, const std::string& chirp_string) {
   std::string monitor_key_base = uname + kMonitorKey_;
   int counter = 0;
   std::string key = monitor_key_base + std::to_string(counter);
@@ -161,7 +171,7 @@ void ServiceLayer::UpdateMonitor(const std::string& uname, const std::string& ch
   ds_.Put(key, chirp_string);
 }
 
-std::vector<std::string> ServiceLayer::GetFollows(const std::string& uname) {
+std::vector<std::string> ServiceLayer::GetUsersFollowed(const std::string& uname) {
   std::vector<std::string> followers;
   std::string follow_key_base = uname + kFollowKey_; 
   int counter = 0;

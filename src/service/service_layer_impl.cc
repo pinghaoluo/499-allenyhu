@@ -29,21 +29,22 @@ Status ServiceLayerServiceImpl::registeruser(ServerContext* context, const Regis
 }
 
 Status ServiceLayerServiceImpl::chirp(ServerContext* context, const ChirpRequest* request, ChirpReply* response) {
+  // Handles if ChirpObj reply_id value
   std::optional<std::string> reply_id = 
    request->parent_id().empty() ? std::nullopt : std::optional<std::string>{request->parent_id()};
     
-  ChirpObj c = service_.MakeChirp(request->username(), request->text(), reply_id);
-  if(c.username().empty()) {
+  ChirpObj chirp = service_.MakeChirp(request->username(), request->text(), reply_id);
+  if(chirp.username().empty()) {
     return Status::CANCELLED;
   }
 
   Chirp* reply = response->mutable_chirp();
-  reply->set_username(c.username());
-  reply->set_text(c.text());
-  reply->set_id(c.id());
-  reply->set_parent_id(c.parent_id());
-  reply->mutable_timestamp()->set_seconds(c.time().seconds());
-  reply->mutable_timestamp()->set_useconds(c.time().useconds());
+  reply->set_username(chirp.username());
+  reply->set_text(chirp.text());
+  reply->set_id(chirp.id());
+  reply->set_parent_id(chirp.parent_id());
+  reply->mutable_timestamp()->set_seconds(chirp.time().seconds);
+  reply->mutable_timestamp()->set_useconds(chirp.time().useconds);
 
   return Status::OK;
 }
@@ -66,27 +67,27 @@ Status ServiceLayerServiceImpl::read(ServerContext* context, const ReadRequest* 
     reply->set_text(c.text());
     reply->set_id(c.id());
     reply->set_parent_id(c.parent_id());
-    reply->mutable_timestamp()->set_seconds(c.time().seconds());
-    reply->mutable_timestamp()->set_useconds(c.time().useconds());
+    reply->mutable_timestamp()->set_seconds(c.time().seconds);
+    reply->mutable_timestamp()->set_useconds(c.time().useconds);
   }
   
   return Status::OK;
 }
 
-  Status ServiceLayerServiceImpl::monitor(ServerContext* context, const MonitorRequest* request, ServerWriter<MonitorReply>* writer) {
-    std::vector<ChirpObj> chirps = service_.Monitor(request->username());
-    for(const ChirpObj& c : chirps) {
-      MonitorReply reply;
-      Chirp* reply_chirp = reply.mutable_chirp();
-      reply_chirp->set_username(c.username());
-      reply_chirp->set_text(c.text());
-      reply_chirp->set_id(c.id());
-      reply_chirp->set_parent_id(c.parent_id());
-      reply_chirp->mutable_timestamp()->set_seconds(c.time().seconds());
-      reply_chirp->mutable_timestamp()->set_useconds(c.time().useconds()); 
+Status ServiceLayerServiceImpl::monitor(ServerContext* context, const MonitorRequest* request, ServerWriter<MonitorReply>* writer) {
+  std::vector<ChirpObj> chirps = service_.Monitor(request->username());
+  for(const ChirpObj& c : chirps) {
+    MonitorReply reply;
+    Chirp* reply_chirp = reply.mutable_chirp();
+    reply_chirp->set_username(c.username());
+    reply_chirp->set_text(c.text());
+    reply_chirp->set_id(c.id());
+    reply_chirp->set_parent_id(c.parent_id());
+    reply_chirp->mutable_timestamp()->set_seconds(c.time().seconds);
+    reply_chirp->mutable_timestamp()->set_useconds(c.time().useconds); 
 
-      writer->Write(reply);
-    }
-    
-    return Status::OK;
+    writer->Write(reply);
   }
+  
+  return Status::OK;
+}

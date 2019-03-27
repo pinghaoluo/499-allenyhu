@@ -12,6 +12,7 @@
 #include "data_store.grpc.pb.h"
 #include "data_store.h"
 
+// Servers as DataStore Server. Based on grpc examples
 class KeyValueStoreServiceImpl final : public chirp::KeyValueStore::Service {
  public:
   // Default constructor

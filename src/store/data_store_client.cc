@@ -53,9 +53,9 @@ std::vector<std::string> DataStoreClient::Get(const std::string& key) {
 
   if(status.ok()) {
     return replies;
-  } else {
-    return std::vector<std::string>{};
   }
+
+  return std::vector<std::string>{};
 }
 
 bool DataStoreClient::DeleteKey(const std::string& key) {

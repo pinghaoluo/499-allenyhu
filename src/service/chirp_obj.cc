@@ -4,14 +4,18 @@ ChirpObj::ChirpObj() : username_(), text_(), id_(), parent_id_(), time_() {}
 
 ChirpObj::ChirpObj(const std::string& uname, const std::string& text, 
     const std::optional<std::string>& parent_id) 
-    : username_(uname), text_(text), time_() {
+    : username_(uname), text_(text) {
   parent_id_ = parent_id.value_or("");
-  id_ = std::to_string(time_.seconds()) + "-" + std::to_string(time_.useconds()) + "-" + username_;
+  time_ = timestamp::MakeTimeStamp();
+  id_ = std::to_string(time_.seconds) + "-" + std::to_string(time_.useconds) + "-" + username_;
 }
 
 ChirpObj::ChirpObj(const std::string& uname, const std::string& text, const std::string& id, 
 		   const std::string& parent_id, int seconds, int useconds) 
-    : username_(uname), text_(text), id_(id), parent_id_(parent_id), time_(seconds, useconds) {}
+    : username_(uname), text_(text), id_(id), parent_id_(parent_id) {
+  TimeStamp ts = {seconds, useconds};
+  time_ = ts;  
+}
 
 std::string ChirpObj::to_string() {
   std::string s; 
@@ -25,8 +29,8 @@ const std::string ChirpObj::print_string() const {
   std::string s; 
   s += "user: " + username_ + "\n";
   s += "chirp id: " + id_ + "\n";
-  s += "time: " + std::to_string(time_.seconds()) + 
-       "-" + std::to_string(time_.useconds()) + "\n";
+  s += "time: " + std::to_string(time_.seconds) + 
+       "-" + std::to_string(time_.useconds) + "\n";
   if (!parent_id_.empty()) {
     s += "reply id: " + parent_id_ + "\n";
   }
@@ -34,13 +38,11 @@ const std::string ChirpObj::print_string() const {
   return s;
 }
 
-// Timestamp defined in this file due to small size
-// Helps with Makefile
-TimeStamp::TimeStamp() {
+TimeStamp timestamp::MakeTimeStamp() {
+  TimeStamp ts;
   timeval t;
   gettimeofday(&t, nullptr);
-  seconds_ = t.tv_sec;
-  useconds_ = t.tv_usec;
+  ts.seconds = t.tv_sec;
+  ts.useconds = t.tv_usec;
+  return ts;
 }
-
-TimeStamp::TimeStamp(int seconds, int useconds) : seconds_(seconds), useconds_(useconds) {}

@@ -48,6 +48,9 @@ class ServiceLayerObj {
   // Used for follow storage in store
   const std::string kFollowKey_ = "-follow-";
 
+  // User for counting number of followers for a user in store
+  const std::string kFollowCounterKey_ = "-follow-counter";
+
   // Used for monitor storage in store
   const std::string kMonitorKey_ = "-monitor-";
 
@@ -81,7 +84,7 @@ class ServiceLayerObj {
   // Helper function to find all usernames of people `uname` is following
   // @uname: current user
   // @ret: vector of all users `uname` is following
-  std::vector<std::string> GetFollows(const std::string& uname);
+  std::vector<std::string> GetUsersFollowed(const std::string& uname);
 
   // Helper fuction to add Monitor bookkeeping key to DS
   // @uname: current user
@@ -91,7 +94,7 @@ class ServiceLayerObj {
   // Helper function to check if `uname` is being monitored
   // @uname: user who is being monitored by another user
   // @chirp_string: the chirp `uname` has just made
-  void CheckMonitor(const std::string& uname, const std::string& chirp_string);
+  void CheckForMonitorKey(const std::string& uname, const std::string& chirp_string);
 
   // Helper function to store chirp made by user monitored by `uname`
   // @uname: the user who is monitoring another

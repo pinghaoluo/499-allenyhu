@@ -1,6 +1,7 @@
 #ifndef SRC_CLI_CLI_PARSER_H_
 #define SRC_CLI_CLI_PARSER_H_
 
+#include <iostream>
 #include <unistd.h>
 #include <string>
 
@@ -26,6 +27,9 @@ class CliParser {
   std::string Parse(int argc, char** argv);
 
  private:
+  // Used as constant for Monitor Loop
+  const int kMonitorLoopDelay_ = 500000;
+
   // ServiceLayerClient that connects CLI to the ServiceLayerServer
   ServiceLayerClient service_;
 
@@ -45,8 +49,6 @@ class CliParser {
 
   // Helper function to parse monitor command
   std::string ParseMonitor(const std::string& uname);
-
-  const int kMonitorLoopDelay = 500000;
 };
 
 #endif  // SRC_CLI_CLI_PARSER_H_

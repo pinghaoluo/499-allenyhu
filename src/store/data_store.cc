@@ -11,6 +11,7 @@ bool DataStore::Put(const std::string& key, const std::string& val) {
 
 std::vector<std::string> DataStore::Get(const std::string& key) {
   std::lock_guard<std::mutex> lg(lock_);
+  // Iterator through `table_`
   auto val = table_.find(key);
   if(val == table_.end()) {
     return {}; 

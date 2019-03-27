@@ -3,8 +3,18 @@
 
 #include <optional>
 #include <string>
+#include <sys/time.h>
 
-#include "timestamp.h" 
+// Struct to handle timestamps for ChirpObjs
+struct TimeStamp {
+  int seconds;
+  int useconds;
+};
+
+namespace timestamp {
+  // Helper function to create TimeStamp struct
+  TimeStamp MakeTimeStamp();
+} // namespace timestamp
 
 // Wrapper object for Chirp message
 class ChirpObj {
@@ -42,7 +52,7 @@ class ChirpObj {
   }
 
   // Getter for `time_`
-  const TimeStamp& time() const {
+  inline const TimeStamp& time() const {
     return time_;
   }
 

@@ -1,5 +1,6 @@
 #include "data_store_impl.h"
 
+// Runs the KeyValueStoreService Server
 int main(int argc, char** argv) {
   std::string server_address("0.0.0.0:50000");
   KeyValueStoreServiceImpl service;

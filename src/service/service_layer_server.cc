@@ -1,5 +1,6 @@
 #include "service_layer_impl.h"
 
+// Runs the ServiceLayer Server
 int main(int argc, char** argv) {
   std::string server_address("0.0.0.0:50002");
   ServiceLayerServiceImpl service;

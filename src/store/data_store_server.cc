@@ -12,6 +12,6 @@ int main(int argc, char** argv) {
   std::cout << "KeyValue Server listening on " << server_address << std::endl;
 
   server->Wait();
-  
+
   return 0;
 }

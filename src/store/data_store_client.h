@@ -19,7 +19,7 @@ class DataStoreClient {
  public:
   // Default constructor for DataStoreClient
   DataStoreClient(std::shared_ptr<grpc::Channel> channel);
-  
+
   // Put command to send PutRequest and receive PutReply
   // @key: key to be put
   // @val: val to be put at 'key'
@@ -35,9 +35,9 @@ class DataStoreClient {
   // @key: key to be deleted
   // @ret: true on successful deletetion
   bool DeleteKey(const std::string& key);
- 
+
  private:
   std::unique_ptr<chirp::KeyValueStore::Stub> stub_;
 };
 
-#endif // SRC_STORE_DATA_STORE_CLIENT_H_
+#endif  // SRC_STORE_DATA_STORE_CLIENT_H_

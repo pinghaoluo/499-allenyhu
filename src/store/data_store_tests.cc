@@ -22,7 +22,7 @@ TEST(DataStorePut, PutSameKey) {
   DataStore ds;
   ds.Put("test", "1");
   ASSERT_EQ("1", ds.Get("test")[0]);
- 
+
   bool check = ds.Put("test", "2");
   EXPECT_TRUE(check);
   EXPECT_EQ(2, ds.Get("test").size());
@@ -51,7 +51,7 @@ TEST(DataStoreGet, GetNoKey) {
 TEST(DataStoreDel, BaseDel) {
   DataStore ds;
   ds.Put("test", "1");
-  
+
   EXPECT_EQ(true, ds.DeleteKey("test"));
   EXPECT_EQ(true, ds.Get("test").empty());
 }

@@ -37,14 +37,15 @@ TEST(ServiceLayerMakeChirp, BaseMakeChirp) {
   s.Register("test");
   ChirpObj c = s.MakeChirp("test", "test text", "id");
   ASSERT_FALSE(c.id().empty());
-  
+
   EXPECT_EQ("test", c.username());
   EXPECT_EQ("test text", c.text());
   EXPECT_EQ("id", c.parent_id());
 }
 
 // Tests MakeChirp method for ServiceLayer
-// Makes a Chirp with no reply_id, Chirp object returned should not have a parent_id
+// Makes a Chirp with no reply_id, Chirp object returned should not have a
+// parent_id
 TEST(ServiceLayerMakeChirp, MakeChirpNoReply) {
   ServiceLayer s;
   s.Register("test");
@@ -57,7 +58,7 @@ TEST(ServiceLayerMakeChirp, MakeChirpNoReply) {
 }
 
 // Tests MakeChirp method for ServiceLayer
-// Makes a Chirp with unregistered user. Should fail 
+// Makes a Chirp with unregistered user. Should fail
 TEST(ServiceLayerMakeChirp, MakeChirpUnregisteredUser) {
   ServiceLayer s;
   ChirpObj c = s.MakeChirp("test", "test text", std::nullopt);
@@ -89,7 +90,7 @@ TEST(ServiceLayerFollow, FollowTwoUsers) {
 
 // Tests Follow method for ServiceLayer
 // `follower` should now follow `root`
-// `test` should now follow `root` 
+// `test` should now follow `root`
 TEST(ServiceLayerFollow, TwoFollowers) {
   ServiceLayer s;
   ASSERT_TRUE(s.Register("root"));
@@ -138,11 +139,12 @@ TEST(ServiceLayerRead, BaseRead) {
   auto replies = s.Read(c1_id);
   ASSERT_EQ(2, replies.size());
   EXPECT_EQ(c1_str, replies[0].to_string());
-  EXPECT_EQ(c2_str, replies[1].to_string()); 
+  EXPECT_EQ(c2_str, replies[1].to_string());
 }
 
 // Tests Read method for ServiceLayer
-// Reads from a chirp that has no replies. Should return vector only containing the original chirp
+// Reads from a chirp that has no replies. Should return vector only containing
+// the original chirp
 TEST(ServiceLayerRead, ReadNoReplies) {
   ServiceLayer s;
   s.Register("c1");
@@ -159,7 +161,8 @@ TEST(ServiceLayerRead, ReadNoReplies) {
 
 // Tests Read method for ServiceLayer
 // Inserts somes chirps, none replying
-// Reads from a chirp that has no replies. Should return vector only containing the original chirp
+// Reads from a chirp that has no replies. Should return vector only containing
+// the original chirp
 TEST(ServiceLayerRead, ReadNoRepliesTwoUsers) {
   ServiceLayer s;
   s.Register("c1");
@@ -243,8 +246,8 @@ TEST(ServiceLayerMonitor, BaseMonitor) {
 // Tests Monitor function for ServiceLayer
 // Due to lack of GRPC, will return vector of store monitor chirps
 // `follower` will follow `root` and call Monitor to set up info
-// `root` will chirp twice. `follower` will call Monitor again to retrieve new chirps
-// Should only return vector of `root`'s chirps on second call
+// `root` will chirp twice. `follower` will call Monitor again to retrieve new
+// chirps Should only return vector of `root`'s chirps on second call
 TEST(ServiceLayerMonitor, BaseMonitorTwoChirps) {
   ServiceLayer s;
   s.Register("root");
@@ -269,8 +272,9 @@ TEST(ServiceLayerMonitor, BaseMonitorTwoChirps) {
 // Tests Monitor function for ServiceLayer
 // Due to lack of GRPC, will return vector of store monitor chirps
 // `follower` will follow `root` and `test` and call Monitor to set up info
-// `root` and `test` will chirp. `follower` will call Monitor again to retrieve new chirps
-// Should only return vector of `root` and `test`'s chirps on second call
+// `root` and `test` will chirp. `follower` will call Monitor again to retrieve
+// new chirps Should only return vector of `root` and `test`'s chirps on second
+// call
 TEST(ServiceLayerMonitor, BaseMonitorTwoFollowed) {
   ServiceLayer s;
   s.Register("root");
@@ -297,8 +301,8 @@ TEST(ServiceLayerMonitor, BaseMonitorTwoFollowed) {
 // Tests Monitor function for ServiceLayer
 // Due to lack of GRPC, will return vector of store monitor chirps
 // `follower` will follow `root` and call Monitor to set up info
-// `root` and `test` will chirp. `follower` will call Monitor again to retrieve new chirps
-// Should only return vector of `root`'s chirps on second call
+// `root` and `test` will chirp. `follower` will call Monitor again to retrieve
+// new chirps Should only return vector of `root`'s chirps on second call
 TEST(ServiceLayerMonitor, BaseMonitorOnlyOneFollowed) {
   ServiceLayer s;
   s.Register("root");

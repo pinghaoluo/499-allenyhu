@@ -1,8 +1,8 @@
 #ifndef SRC_CLI_CLI_PARSER_H_
 #define SRC_CLI_CLI_PARSER_H_
 
-#include <iostream>
 #include <unistd.h>
+#include <iostream>
 #include <string>
 
 #include <gflags/gflags.h>

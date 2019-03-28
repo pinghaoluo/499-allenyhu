@@ -5,8 +5,8 @@ using chirp::ChirpReply;
 using chirp::ChirpRequest;
 using chirp::FollowReply;
 using chirp::FollowRequest;
-using chirp::MonitorRequest;
 using chirp::MonitorReply;
+using chirp::MonitorRequest;
 using chirp::ReadReply;
 using chirp::ReadRequest;
 using chirp::RegisterReply;
@@ -32,9 +32,9 @@ bool ServiceLayerClient::Register(const std::string& uname) {
   return status.ok();
 }
 
-ChirpObj ServiceLayerClient::Chirp(const std::string& uname,
-                                   const std::string& text,
-                                   const std::optional<std::string>& parent_id) {
+ChirpObj ServiceLayerClient::Chirp(
+    const std::string& uname, const std::string& text,
+    const std::optional<std::string>& parent_id) {
   ChirpRequest request;
   request.set_username(uname);
   request.set_text(text);
@@ -44,7 +44,7 @@ ChirpObj ServiceLayerClient::Chirp(const std::string& uname,
   ClientContext context;
 
   Status status = stub_->chirp(&context, request, &reply);
-  if(status.ok()) {
+  if (status.ok()) {
     auto chirp = reply.chirp();
     return ChirpObj(chirp.username(), chirp.text(), chirp.id(),
                     chirp.parent_id(), chirp.timestamp().seconds(),
@@ -53,7 +53,8 @@ ChirpObj ServiceLayerClient::Chirp(const std::string& uname,
   return ChirpObj();
 }
 
-bool ServiceLayerClient::Follow(const std::string& uname, const std::string& to_follow_user) {
+bool ServiceLayerClient::Follow(const std::string& uname,
+                                const std::string& to_follow_user) {
   FollowRequest request;
   request.set_username(uname);
   request.set_to_follow(to_follow_user);
@@ -74,10 +75,9 @@ std::vector<ChirpObj> ServiceLayerClient::Read(const std::string& chirp_id) {
 
   Status status = stub_->read(&context, request, &reply);
   std::vector<ChirpObj> replies;
-  for(const auto &chirp : reply.chirps()) {
-    ChirpObj c(chirp.username(), chirp.text(), chirp.id(),
-             chirp.parent_id(), chirp.timestamp().seconds(),
-             chirp.timestamp().useconds());
+  for (const auto& chirp : reply.chirps()) {
+    ChirpObj c(chirp.username(), chirp.text(), chirp.id(), chirp.parent_id(),
+               chirp.timestamp().seconds(), chirp.timestamp().useconds());
     replies.push_back(c);
   }
   return replies;
@@ -87,15 +87,15 @@ std::vector<ChirpObj> ServiceLayerClient::Monitor(const std::string& uname) {
   MonitorRequest request;
   request.set_username(uname);
   ClientContext context;
-  std::shared_ptr<ClientReader<MonitorReply> > stream(stub_->monitor(&context, request)); 
+  std::shared_ptr<ClientReader<MonitorReply> > stream(
+      stub_->monitor(&context, request));
 
   MonitorReply reply;
   std::vector<ChirpObj> chirps;
-  while(stream->Read(&reply)) {
+  while (stream->Read(&reply)) {
     auto chirp = reply.chirp();
-    ChirpObj c(chirp.username(), chirp.text(), chirp.id(),
-	       chirp.parent_id(), chirp.timestamp().seconds(),
-	       chirp.timestamp().useconds());
+    ChirpObj c(chirp.username(), chirp.text(), chirp.id(), chirp.parent_id(),
+               chirp.timestamp().seconds(), chirp.timestamp().useconds());
     chirps.push_back(c);
   }
   return chirps;

@@ -31,7 +31,8 @@ class ServiceLayerClient {
   // @text: text to be added to Chirp
   // @parent_id: id of Chirp this Chirp is in response to (optional)
   // @ret: the Chirp object that was created
-  ChirpObj Chirp(const std::string& uname, const std::string& text, const std::optional<std::string>& parent_id);
+  ChirpObj Chirp(const std::string& uname, const std::string& text,
+                 const std::optional<std::string>& parent_id);
 
   // Follow command to send FollowRequest and receive FollowReply
   // @uname: user logged in
@@ -53,4 +54,4 @@ class ServiceLayerClient {
   std::unique_ptr<chirp::ServiceLayer::Stub> stub_;
 };
 
-#endif // SRC_SERVICE_SERVICE_LAYER_CLIENT_H_
+#endif  // SRC_SERVICE_SERVICE_LAYER_CLIENT_H_

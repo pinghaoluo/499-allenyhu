@@ -1,3 +1,6 @@
+#ifndef SRC_SERVICE_SERVICE_LAYER_CLIENT_H_
+#define SRC_SERVICE_SERVICE_LAYER_CLIENT_H_
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -33,7 +36,7 @@ class ServiceLayerClient {
   // Follow command to send FollowRequest and receive FollowReply
   // @uname: user logged in
   // @to_follow_user: user that `uname` will follow
-  // @ret: ture or false based on success
+  // @ret: true or false based on success
   bool Follow(const std::string& uname, const std::string& to_follow_user);
 
   // Read command to send ReadRequest and receive ReadReply
@@ -43,8 +46,11 @@ class ServiceLayerClient {
 
   // Monitor command to send MonitorRequest and receive stream of MonitorReply
   // @uname: user requesting monitor
+  // @ret: vector of Chirps to be streamed
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
   std::unique_ptr<chirp::ServiceLayer::Stub> stub_;
 };
+
+#endif // SRC_SERVICE_SERVICE_LAYER_CLIENT_H_

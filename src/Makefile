@@ -17,6 +17,10 @@
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 
+CLI_DIR = cli
+DS_DIR = store
+SERVICE_DIR = service
+
 GTEST_LIB = gtest
 GFLAGS_LIB = gflags
 GTEST_INCLUDE = /usr/local/include
@@ -25,7 +29,7 @@ GTEST_LDFLAGS = -L /usr/local/lib -l $(GTEST_LIB) -l $(GFLAGS_LIB) -pthread
 
 CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc` 
-CXXFLAGS += -std=c++17 -g -Wall
+CXXFLAGS += -std=c++17 -g -Wall -I. 
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -43,14 +47,8 @@ PROTOS_PATH = ../protos
 
 vpath %.proto $(PROTOS_PATH)
 
-CLI_DIR = ./cli
-DS_DIR = ./store
-SERVICE_DIR = ./service
 
-all: system-check data_store service_layer 
-
-# data_store: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o data_store.o data_store_client data_store_server.o
-# 	$(CXX) $^ $(LDFLAGS) -o $@
+all: chirp data_store_server service_layer_server ds_tests service_tests
 
 ds_tests: data_store.o data_store_tests.o
 	$(CXX) $^ $(GTEST_LDFLAGS) -o $@
@@ -61,7 +59,7 @@ data_store.o: $(DS_DIR)/data_store.cc
 data_store_client: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o data_store.o
+data_store_server: $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_server.o $(DS_DIR)/data_store_impl.o data_store.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 data_store_tests.o: $(DS_DIR)/data_store_tests.cc
@@ -76,7 +74,7 @@ service_layer_grpc: $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj
 service_layer_client: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-service_layer_server: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_server.o $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
+service_layer_server: $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_server.o $(SERVICE_DIR)/service_layer_impl.o $(SERVICE_DIR)/service_layer_grpc.o $(SERVICE_DIR)/chirp_obj.o $(DS_DIR)/data_store.pb.o $(DS_DIR)/data_store.grpc.pb.o $(DS_DIR)/data_store_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 service_tests: $(SERVICE_DIR)/service_layer.o $(SERVICE_DIR)/service_layer_tests.o data_store.o $(SERVICE_DIR)/chirp_obj.o
@@ -88,7 +86,7 @@ service_layer.o: $(SERVICE_DIR)/service_layer.cc
 service_layer_tests.o: $(SERVICE_DIR)/service_layer_tests.cc
 	$(CXX) $(GTEST_FLAGS) $<
 
-chirp: main.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o 
+chirp: $(CLI_DIR)/chirp.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVICE_DIR)/service_layer.grpc.pb.o $(SERVICE_DIR)/service_layer_client.o $(SERVICE_DIR)/chirp_obj.o 
 	$(CXX) $^ $(LDFLAGS) -lgflags -o $@
 
 .PRECIOUS: %.grpc.pb.cc
@@ -100,7 +98,7 @@ chirp: main.o $(CLI_DIR)/cli_parser.o $(SERVICE_DIR)/service_layer.pb.o $(SERVIC
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -f *.o *.pb.cc *.pb.h data_store service_layer cli 
+	rm -f *.o $(SERVICE_DIR)/*.o $(DS_DIR)/*.o $(CLI_DIR)/*.o *.pb.cc *.pb.h data_store_server service_layer_server chirp ds_tests service_tests 
 
 # The following is to test your system and ensure a smoother experience.
 # They are by no means necessary to actually compile a grpc-enabled software.

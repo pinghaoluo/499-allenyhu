@@ -1,6 +1,6 @@
-#include "data_store.h"
-
 #include <gtest/gtest.h>
+
+#include "data_store.h"
 
 // Tests default constructor for DataStore
 TEST(DataStoreCreate, NewDataStore) {
@@ -13,7 +13,7 @@ TEST(DataStoreCreate, NewDataStore) {
 TEST(DataStorePut, BasePut) {
   DataStore ds;
   bool check = ds.Put("test", "test_value");
-  EXPECT_EQ(true, check);
+  EXPECT_TRUE(check);
 }
 
 // Tests Put for DataStore at same key
@@ -24,7 +24,7 @@ TEST(DataStorePut, PutSameKey) {
   ASSERT_EQ("1", ds.Get("test")[0]);
  
   bool check = ds.Put("test", "2");
-  EXPECT_EQ(true, check);
+  EXPECT_TRUE(check);
   EXPECT_EQ(2, ds.Get("test").size());
   EXPECT_EQ("2", ds.Get("test")[1]);
 }
@@ -60,7 +60,7 @@ TEST(DataStoreDel, BaseDel) {
 // Should return false, signalling failure
 TEST(DataStoreDel, DelNoKey) {
   DataStore ds;
-  EXPECT_EQ(false, ds.DeleteKey("test"));
+  EXPECT_FALSE(ds.DeleteKey("test"));
 }
 
 int main(int argc, char** argv) {

@@ -1,10 +1,14 @@
+#ifndef SRC_SERVICE_SERVICE_LAYER_H_
+#define SRC_SERVICE_SERVICE_LAYER_H_
+
 #include <optional>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <vector>
 
 #include "chirp_obj.h"
-#include "../store/data_store.h"
+#include "store/data_store.h"
 
 // Model class for service layer component of Chirp system
 class ServiceLayer {
@@ -41,6 +45,24 @@ class ServiceLayer {
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
  private:
+  // Used for follow storage in store
+  const std::string kFollowKey_ = "-follow-"; 
+
+  // Used for counting number of followers for a user in store
+  const std::string kFollowCounterKey_ = "-follow-counter";
+  
+  // Used for monitor storage in store
+  const std::string kMonitorKey_ = "-monitor-";
+
+  // Used for monitor checking in store
+  const std::string kMonitorCheckKey_ = "-monitor-check-";
+
+  // Used for reply storage in store 
+  const std::string kReplyKey_ = "-reply-"; 
+
+  // Used for counting number of replies to a chirp in store
+  const std::string kReplyCounterKey_ = "-reply-counter";
+  
   DataStore ds_; // private DataStore for testing purposes
 
   // Helper function to parse data from DataStore
@@ -62,7 +84,7 @@ class ServiceLayer {
   // Helper function to find all usernames of people `uname` is following
   // @uname: current user
   // @ret: vector of all users `uname` is following
-  std::vector<std::string> GetFollows(const std::string& uname);
+  std::vector<std::string> GetUsersFollowed(const std::string& uname);
 
   // Helper fuction to add Monitor bookkeeping key to DS
   // @uname: current user
@@ -72,12 +94,12 @@ class ServiceLayer {
   // Helper function to check if `uname` is being monitored
   // @uname: user who is being monitored by another user
   // @chirp_string: the chirp `uname` has just made
-  void CheckMonitor(const std::string& uname, const std::string& chirp_string);
+  void CheckForMonitorKey(const std::string& uname, const std::string& chirp_string);
 
   // Helper function to store chirp made by user monitored by `uname`
   // @uname: the user who is monitoring another
   // @chirp_string: data of Chirp just made by a user `uname` is following
   void UpdateMonitor(const std::string& uname, const std::string& chirp_string);
-
-  // TODO: Queue to backlog requests
 };
+
+#endif // SRC_SERVICE_SERVICE_LAYER_H_

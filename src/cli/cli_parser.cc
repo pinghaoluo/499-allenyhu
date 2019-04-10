@@ -2,7 +2,7 @@
 
 // GFLAG definitions for cmdline args
 // DECLARED in cli_parser.h to allow external access
-DEFINE_string(register, "", "username for registering a new user");
+DEFINE_string(reg, "", "username for registering a new user");
 DEFINE_string(user, "", "username for user making command");
 DEFINE_string(chirp, "", "text to be chirped");
 DEFINE_string(reply, "", "reply id for given chirp");
@@ -17,8 +17,8 @@ CliParser::CliParser()
 
 std::string CliParser::Parse(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
-  if (!FLAGS_register.empty()) {
-    return ParseRegister(FLAGS_register);
+  if (!FLAGS_reg.empty()) {
+    return ParseRegister(FLAGS_reg);
   }
 
   if (!FLAGS_chirp.empty()) {
@@ -81,7 +81,7 @@ std::string CliParser::ParseChirp(const std::string& uname,
 
 std::string CliParser::ParseFollow(const std::string& uname,
                                    const std::string& to_follow_user) {
-  if (!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+  if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
         FLAGS_read.empty() && !FLAGS_monitor)) {
     return "Cannot Register, Reply, Read, or Monitor with Follow.";
   }
@@ -102,7 +102,7 @@ std::string CliParser::ParseFollow(const std::string& uname,
 }
 
 std::string CliParser::ParseRead(const std::string& chirp_id) {
-  if (!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+  if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
         FLAGS_follow.empty() && !FLAGS_monitor)) {
     return "Cannot Reigster, Chirp, Reply, Follow, or Monitor with Read.";
   }
@@ -117,7 +117,7 @@ std::string CliParser::ParseRead(const std::string& chirp_id) {
 }
 
 std::string CliParser::ParseMonitor(const std::string& uname) {
-  if (!(FLAGS_register.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+  if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
         FLAGS_read.empty() && FLAGS_follow.empty())) {
     return "Cannot Register, Reply, Read, or Follow with Monitor.";
   }

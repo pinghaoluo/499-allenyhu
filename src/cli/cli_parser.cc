@@ -10,7 +10,8 @@ DEFINE_string(follow, "", "user to follow");
 DEFINE_string(read, "", "returns chirp thread starting with given chirp id");
 DEFINE_bool(monitor, false,
             "starts monitoring for all following accounts' chirps");
-
+DEFINE_bool(stream, false,
+            "starts monitoring for all tags");
 CliParser::CliParser()
     : service_(grpc::CreateChannel("0.0.0.0:50002",
                                    grpc::InsecureChannelCredentials())) {}
@@ -136,4 +137,26 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
   }
 
   return "Monitor complete";
+}
+
+std::string CliParser::ParseStream(const std::string& uname) {
+  if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
+        FLAGS_read.empty() && FLAGS_follow.empty())) {
+    return "Cannot Register, Reply, Read, or Follow with Monitor.";
+  }
+
+  if (uname.empty()) {
+    return "Must be logged in to perform actions.";
+  }
+
+  while (true) {
+    std::vector<ChirpObj> chirps = service_.Monitor(uname);
+    for (const auto c : chirps) {
+      std::cout << c.print_string() << std::endl;
+    }
+
+    usleep(kMonitorLoopDelay_);
+  }
+
+  return "Stream complete";
 }

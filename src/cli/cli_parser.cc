@@ -141,8 +141,8 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
 
 std::string CliParser::ParseStream(const std::string& uname) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && FLAGS_follow.empty())) {
-    return "Cannot Register, Reply, Read, or Follow with Monitor.";
+        FLAGS_read.empty() && FLAGS_follow.empty()&& FLAGS_monitor.empty())) {
+    return "Cannot Register, Reply, Read, or Follow with Stream.";
   }
 
   if (uname.empty()) {
@@ -150,7 +150,7 @@ std::string CliParser::ParseStream(const std::string& uname) {
   }
 
   while (true) {
-    std::vector<ChirpObj> chirps = service_.Monitor(uname);
+    std::vector<ChirpObj> chirps = service_.Stream(uname);
     for (const auto c : chirps) {
       std::cout << c.print_string() << std::endl;
     }

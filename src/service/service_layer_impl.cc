@@ -7,6 +7,8 @@ using chirp::FollowReply;
 using chirp::FollowRequest;
 using chirp::MonitorReply;
 using chirp::MonitorRequest;
+using chirp::HashReply;
+using chirp::HashRequest;
 using chirp::ReadReply;
 using chirp::ReadRequest;
 using chirp::RegisterReply;
@@ -91,6 +93,26 @@ Status ServiceLayerServiceImpl::monitor(ServerContext* context,
   std::vector<ChirpObj> chirps = service_.Monitor(request->username());
   for (const ChirpObj& c : chirps) {
     MonitorReply reply;
+    Chirp* reply_chirp = reply.mutable_chirp();
+    reply_chirp->set_username(c.username());
+    reply_chirp->set_text(c.text());
+    reply_chirp->set_id(c.id());
+    reply_chirp->set_parent_id(c.parent_id());
+    reply_chirp->mutable_timestamp()->set_seconds(c.time().seconds);
+    reply_chirp->mutable_timestamp()->set_useconds(c.time().useconds);
+
+    writer->Write(reply);
+  }
+
+  return Status::OK;
+}
+
+Status ServiceLayerServiceImpl::hash(ServerContext* context,
+                                        const HashRequest* request,
+                                        ServerWriter<HashReply>* writer) {
+  std::vector<ChirpObj> chirps = service_.Hash(request->username());
+  for (const ChirpObj& c : chirps) {
+    HashReply reply;
     Chirp* reply_chirp = reply.mutable_chirp();
     reply_chirp->set_username(c.username());
     reply_chirp->set_text(c.text());

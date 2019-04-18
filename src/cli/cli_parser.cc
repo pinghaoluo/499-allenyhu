@@ -19,23 +19,33 @@ CliParser::CliParser()
 std::string CliParser::Parse(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (!FLAGS_reg.empty()) {
+    std::cout<<"Registering"<<std::endl;
     return ParseRegister(FLAGS_reg);
   }
 
   if (!FLAGS_chirp.empty()) {
+        std::cout<<"Chirping"<<std::endl;
     return ParseChirp(FLAGS_user, FLAGS_chirp, FLAGS_reply);
   }
 
   if (!FLAGS_follow.empty()) {
+    std::cout<<"Following"<<std::endl;
     return ParseFollow(FLAGS_user, FLAGS_follow);
   }
 
   if (!FLAGS_read.empty()) {
+    std::cout<<"Reading"<<std::endl;
     return ParseRead(FLAGS_read);
   }
 
   if (FLAGS_monitor) {
+    std::cout<<"Monitoring"<<std::endl;
     return ParseMonitor(FLAGS_user);
+  }
+
+  if (FLAGS_stream) {
+    std::cout<<"Streaming"<<std::endl;
+    return ParseStream(FLAGS_user);
   }
 
   if (!FLAGS_user.empty()) {
@@ -47,7 +57,7 @@ std::string CliParser::Parse(int argc, char** argv) {
 
 std::string CliParser::ParseRegister(const std::string& uname) {
   if (!(FLAGS_user.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor)) {
+        FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor&& !FLAGS_stream)) {
     return "Cannot perform any other commands with Register.";
   }
 
@@ -60,7 +70,7 @@ std::string CliParser::ParseRegister(const std::string& uname) {
 std::string CliParser::ParseChirp(const std::string& uname,
                                   const std::string& text,
                                   const std::string& reply_id) {
-  if (!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor)) {
+  if (!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor && !FLAGS_stream)) {
     return "Cannot Follow, Read, or Monitor with Chirp.";
   }
 
@@ -83,7 +93,7 @@ std::string CliParser::ParseChirp(const std::string& uname,
 std::string CliParser::ParseFollow(const std::string& uname,
                                    const std::string& to_follow_user) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && !FLAGS_monitor)) {
+        FLAGS_read.empty() && !FLAGS_monitor && !FLAGS_stream)) {
     return "Cannot Register, Reply, Read, or Monitor with Follow.";
   }
 
@@ -104,7 +114,7 @@ std::string CliParser::ParseFollow(const std::string& uname,
 
 std::string CliParser::ParseRead(const std::string& chirp_id) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_follow.empty() && !FLAGS_monitor)) {
+        FLAGS_follow.empty() && !FLAGS_monitor && !FLAGS_stream)) {
     return "Cannot Reigster, Chirp, Reply, Follow, or Monitor with Read.";
   }
 
@@ -119,7 +129,7 @@ std::string CliParser::ParseRead(const std::string& chirp_id) {
 
 std::string CliParser::ParseMonitor(const std::string& uname) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && FLAGS_follow.empty())) {
+        FLAGS_read.empty() && FLAGS_follow.empty()) && !FLAGS_stream) {
     return "Cannot Register, Reply, Read, or Follow with Monitor.";
   }
 
@@ -141,7 +151,7 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
 
 std::string CliParser::ParseStream(const std::string& uname) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && FLAGS_follow.empty()&& FLAGS_monitor.empty())) {
+        FLAGS_read.empty() && FLAGS_follow.empty()&& !FLAGS_monitor)) {
     return "Cannot Register, Reply, Read, or Follow with Stream.";
   }
 

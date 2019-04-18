@@ -49,7 +49,7 @@ class ServiceLayerClient {
   // @uname: user requesting monitor
   // @ret: vector of Chirps to be streamed
   std::vector<ChirpObj> Monitor(const std::string& uname);
-
+  std::vector<ChirpObj> Stream(const std::string& uname);
  private:
   std::unique_ptr<chirp::ServiceLayer::Stub> stub_;
 };

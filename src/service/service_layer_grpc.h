@@ -45,6 +45,9 @@ class ServiceLayerObj {
   // @ret: the Chirps of all followed users
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
+
+  std::vector<ChirpObj> Hash(const std::string& uname);
+
  private:
   // Used for follow storage in store
   const std::string kFollowKey_ = "-follow-";

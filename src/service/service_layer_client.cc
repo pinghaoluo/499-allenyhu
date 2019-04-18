@@ -7,6 +7,8 @@ using chirp::FollowReply;
 using chirp::FollowRequest;
 using chirp::MonitorReply;
 using chirp::MonitorRequest;
+using chirp::HashReply;
+using chirp::HashRequest;
 using chirp::ReadReply;
 using chirp::ReadRequest;
 using chirp::RegisterReply;
@@ -91,6 +93,24 @@ std::vector<ChirpObj> ServiceLayerClient::Monitor(const std::string& uname) {
       stub_->monitor(&context, request));
 
   MonitorReply reply;
+  std::vector<ChirpObj> chirps;
+  while (stream->Read(&reply)) {
+    auto chirp = reply.chirp();
+    ChirpObj c(chirp.username(), chirp.text(), chirp.id(), chirp.parent_id(),
+               chirp.timestamp().seconds(), chirp.timestamp().useconds());
+    chirps.push_back(c);
+  }
+  return chirps;
+}
+
+std::vector<ChirpObj> ServiceLayerClient::Stream(const std::string& uname) {
+  HashRequest request;
+  request.set_username(uname);
+  ClientContext context;
+  std::shared_ptr<ClientReader<HashReply> > stream(
+      stub_->hash(&context, request));
+
+  HashReply reply;
   std::vector<ChirpObj> chirps;
   while (stream->Read(&reply)) {
     auto chirp = reply.chirp();

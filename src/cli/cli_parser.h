@@ -16,7 +16,7 @@ DECLARE_string(reply);
 DECLARE_string(follow);
 DECLARE_string(read);
 DECLARE_bool(monitor);
-DECLARE_bool(stream);
+
 // Wrapper class to support CLI parsing
 class CliParser {
  public:
@@ -25,6 +25,7 @@ class CliParser {
 
   // Parses given commandline arguments
   std::string Parse(int argc, char** argv);
+
  private:
   // Used as constant for Monitor Loop
   const int kMonitorLoopDelay_ = 500000;
@@ -48,8 +49,8 @@ class CliParser {
 
   // Helper function to parse monitor command
   std::string ParseMonitor(const std::string& uname);
-
-  std::string ParseStream();
+  
+  std::string ParseStream(const std::string& uname);
 };
 
 #endif  // SRC_CLI_CLI_PARSER_H_

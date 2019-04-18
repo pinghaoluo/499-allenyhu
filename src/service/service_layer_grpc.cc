@@ -103,6 +103,34 @@ void ServiceLayerObj::ReadDfs(const std::string& key_base,
   ReadDfs(key_base, chirps, counter + 1);
 }
 
+std::vector<ChirpObj> ServiceLayerObj::Hash(const std::string& uname) {
+  std::vector<std::string> users = GetUsersFollowed(uname);
+
+  // Setting up DS to store monitor data
+  for (const std::string& u : users) {
+    PutMonitorKey(uname, u);
+  }
+
+  std::vector<ChirpObj> chirps;
+  std::string monitor_check_base = uname + kMonitorCheckKey_;
+  int counter = 0;
+  std::string key = monitor_check_base + std::to_string(counter);
+  std::vector<std::string> entry = ds_.Get(key);
+
+  // Loop over all potential monitor keys present
+  while (!entry.empty()) {
+    ChirpObj c = ParseChirpString(entry[0]);
+    chirps.push_back(c);
+    // No longer need this key once entry has been stored
+    ds_.DeleteKey(key);
+    counter++;
+    key = monitor_check_base + std::to_string(counter);
+    entry = ds_.Get(key);
+  }
+
+  return chirps;
+}
+
 std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
   std::vector<std::string> users = GetUsersFollowed(uname);
 

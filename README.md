@@ -50,12 +50,13 @@ Be sure to run service_layer_server and data_store_server before using cli: `./s
 
 
 USING CLI
-To Register User: `./chirp —reg user1
-To Chirp: `./chirp —user user1 —chirp chirp1 —reply <chirp id>`
+To Register User: ./chirp  --reg user3
+
+To Chirp: ./chirp  —user user1  —chirp chirp1 —reply <chirp id>
   - reply is optional
-To Follow: `./chirp —user user1 —follow user2
-To Read: `./chirp —read <chirp id>`
-To Monitor: `./chirp —user user1 —monitor`
+To Follow: ./chirp —user user1 —follow user2
+To Read: ./chirp —read <chirp id>`
+To Monitor: ./chirp —user user1 —monitor`
 To Stream: ./chirp -user user1 -stream
 
 ***Commands will not work together (must do one at a time)***

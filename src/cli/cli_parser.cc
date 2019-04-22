@@ -10,8 +10,7 @@ DEFINE_string(follow, "", "user to follow");
 DEFINE_string(read, "", "returns chirp thread starting with given chirp id");
 DEFINE_bool(monitor, false,
             "starts monitoring for all following accounts' chirps");
-DEFINE_bool(stream, false,
-            "starts monitoring for all tags");
+DEFINE_string(stream, "","starts monitoring for all tags");
 CliParser::CliParser()
     : service_(grpc::CreateChannel("0.0.0.0:50002",
                                    grpc::InsecureChannelCredentials())) {}
@@ -43,9 +42,9 @@ std::string CliParser::Parse(int argc, char** argv) {
     return ParseMonitor(FLAGS_user);
   }
 
-  if (FLAGS_stream) {
+  if (!FLAGS_stream.empty()) {
     std::cout<<"Streaming"<<std::endl;
-    return ParseStream(FLAGS_user);
+    return ParseStream(FLAGS_user,FLAGS_stream);
   }
 
   if (!FLAGS_user.empty()) {
@@ -57,7 +56,7 @@ std::string CliParser::Parse(int argc, char** argv) {
 
 std::string CliParser::ParseRegister(const std::string& uname) {
   if (!(FLAGS_user.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor&& !FLAGS_stream)) {
+        FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor&& FLAGS_stream.empty())) {
     return "Cannot perform any other commands with Register.";
   }
 
@@ -70,7 +69,7 @@ std::string CliParser::ParseRegister(const std::string& uname) {
 std::string CliParser::ParseChirp(const std::string& uname,
                                   const std::string& text,
                                   const std::string& reply_id) {
-  if (!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor && !FLAGS_stream)) {
+  if (!(FLAGS_follow.empty() && FLAGS_read.empty() && !FLAGS_monitor && FLAGS_stream.empty())) {
     return "Cannot Follow, Read, or Monitor with Chirp.";
   }
 
@@ -93,7 +92,7 @@ std::string CliParser::ParseChirp(const std::string& uname,
 std::string CliParser::ParseFollow(const std::string& uname,
                                    const std::string& to_follow_user) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && !FLAGS_monitor && !FLAGS_stream)) {
+        FLAGS_read.empty() && !FLAGS_monitor && FLAGS_stream.empty())) {
     return "Cannot Register, Reply, Read, or Monitor with Follow.";
   }
 
@@ -114,7 +113,7 @@ std::string CliParser::ParseFollow(const std::string& uname,
 
 std::string CliParser::ParseRead(const std::string& chirp_id) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_follow.empty() && !FLAGS_monitor && !FLAGS_stream)) {
+        FLAGS_follow.empty() && !FLAGS_monitor && FLAGS_stream.empty())) {
     return "Cannot Reigster, Chirp, Reply, Follow, or Monitor with Read.";
   }
 
@@ -129,7 +128,7 @@ std::string CliParser::ParseRead(const std::string& chirp_id) {
 
 std::string CliParser::ParseMonitor(const std::string& uname) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
-        FLAGS_read.empty() && FLAGS_follow.empty()) && !FLAGS_stream) {
+        FLAGS_read.empty() && FLAGS_follow.empty()) && !FLAGS_stream.empty()) {
     return "Cannot Register, Reply, Read, or Follow with Monitor.";
   }
 
@@ -149,10 +148,16 @@ std::string CliParser::ParseMonitor(const std::string& uname) {
   return "Monitor complete";
 }
 
-std::string CliParser::ParseStream(const std::string& uname) {
+
+
+std::string CliParser::ParseStream(const std::string& uname,const std::string& hash_tag) {
   if (!(FLAGS_reg.empty() && FLAGS_chirp.empty() && FLAGS_reply.empty() &&
         FLAGS_read.empty() && FLAGS_follow.empty()&& !FLAGS_monitor)) {
     return "Cannot Register, Reply, Read, or Follow with Stream.";
+  }
+
+  if (hash_tag.empty()) {
+    return "Hash tags is empty.";
   }
 
   if (uname.empty()) {
@@ -160,7 +165,7 @@ std::string CliParser::ParseStream(const std::string& uname) {
   }
 
   while (true) {
-    std::vector<ChirpObj> chirps = service_.Stream(uname);
+    std::vector<ChirpObj> chirps = service_.Stream(uname,hash_tag);
     for (const auto c : chirps) {
       std::cout << c.print_string() << std::endl;
     }

@@ -15,6 +15,7 @@ using chirp::RegisterReply;
 using chirp::RegisterRequest;
 using chirp::ServiceLayer;
 using chirp::Timestamp;
+using chirp::Users;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::ClientReader;
@@ -103,9 +104,10 @@ std::vector<ChirpObj> ServiceLayerClient::Monitor(const std::string& uname) {
   return chirps;
 }
 
-std::vector<ChirpObj> ServiceLayerClient::Stream(const std::string& uname) {
+std::vector<ChirpObj> ServiceLayerClient::Stream(const std::string& uname,const std::string& hash_tag) {
   HashRequest request;
   request.set_username(uname);
+  request.set_hashtag(hash_tag);
   ClientContext context;
   std::shared_ptr<ClientReader<HashReply> > stream(
       stub_->hash(&context, request));

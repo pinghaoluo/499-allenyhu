@@ -15,6 +15,7 @@ using chirp::RegisterReply;
 using chirp::RegisterRequest;
 using chirp::ServiceLayer;
 using chirp::Timestamp;
+using chirp::Users;
 using grpc::Channel;
 using grpc::ServerContext;
 using grpc::ServerWriter;
@@ -110,7 +111,7 @@ Status ServiceLayerServiceImpl::monitor(ServerContext* context,
 Status ServiceLayerServiceImpl::hash(ServerContext* context,
                                         const HashRequest* request,
                                         ServerWriter<HashReply>* writer) {
-  std::vector<ChirpObj> chirps = service_.Hash(request->username());
+  std::vector<ChirpObj> chirps = service_.HashTag(request->username(),request->hashtag());
   for (const ChirpObj& c : chirps) {
     HashReply reply;
     Chirp* reply_chirp = reply.mutable_chirp();

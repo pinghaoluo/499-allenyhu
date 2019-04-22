@@ -46,9 +46,10 @@ class ServiceLayerServiceImpl final : public chirp::ServiceLayer::Service {
       grpc::ServerContext* context, const chirp::MonitorRequest* request,
       grpc::ServerWriter<chirp::MonitorReply>* writer) override;
 
-    grpc::Status hash(
-      grpc::ServerContext* context, const chirp::HashRequest* request,
-      grpc::ServerWriter<chirp::HashReply>* writer) override;
+  // Handles stream command received from ServiceLayerClient
+  grpc::Status hash(
+    grpc::ServerContext* context, const chirp::HashRequest* request,
+    grpc::ServerWriter<chirp::HashReply>* writer) override;
 
  private:
   // ServiceLayerObj the server is interacting with

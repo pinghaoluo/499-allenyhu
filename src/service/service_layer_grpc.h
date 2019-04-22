@@ -104,8 +104,6 @@ class ServiceLayerObj {
   // @ret: vector of all users `uname` is following
   std::vector<std::string> GetUsersFollowed(const std::string& uname);
 
-
-
   // Helper fuction to add Monitor bookkeeping key to DS
   // @uname: current user
   // @followed_user: user `uname` user is following and wants to monitor

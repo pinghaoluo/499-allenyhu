@@ -5,7 +5,7 @@ ServiceLayerObj::ServiceLayerObj()
                               grpc::InsecureChannelCredentials())) {}
 
 bool ServiceLayerObj::Register(const std::string& uname) {
-  // std::cout<<"testing"<<std::endl;
+  // storing all users
   std::vector<std::string> entry = ds_.Get(AllUserKey_); 
 
   if (uname.empty() || !ds_.Get(uname).empty()) {
@@ -108,9 +108,8 @@ void ServiceLayerObj::ReadDfs(const std::string& key_base,
 }
 
 std::vector<ChirpObj> ServiceLayerObj::HashTag(const std::string& uname,const std::string& hash_tag) {
+  //getting all users
   std::vector<std::string> users = ds_.Get(AllUserKey_); 
-  // std::cout<<uname<<": "<<hash_tag<<std::endl;
-  // Setting up DS to store monitor data
   for (const std::string& u : users) {
     PutMonitorKey(uname, u);
   }
@@ -166,9 +165,10 @@ std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
 }
 
 std::vector<ChirpObj> ServiceLayerObj::CheckTag(std::vector<ChirpObj> &chirps,const std::string& hash_tag){
-     std::cout<<": "<<hash_tag<<std::endl;
   for(std::vector<ChirpObj>::iterator it = chirps.begin(); it != chirps.end();) {
+      //bool to check if contain hash rag
       bool contain = false;
+      //text of chirp
       std::string text = it->text();
       // holds all the positions that sub occurs within #
       std::vector<size_t> positions; 
@@ -183,26 +183,27 @@ std::vector<ChirpObj> ServiceLayerObj::CheckTag(std::vector<ChirpObj> &chirps,co
         continue;
       }
 
+      //check all positions with #
       for(auto p:positions){
         std::string sub = text.substr(p);
         std::size_t pos1 = sub.find(" ");
         std::string tag = sub.substr (1,pos1);
+        //trim the tags with white space
         tag.erase( std::remove_if( tag.begin(), tag.end(), ::isspace ), tag.end() );
         if(tag == hash_tag){
-          std::cout<<tag<<std::endl;
-          std::cout<<hash_tag<<std::endl;
+          // std::cout<<tag<<std::endl;
+          // std::cout<<hash_tag<<std::endl;
           contain = true;
         }
       }
+      //if doesnt contain 
       if(contain == false){
         it = chirps.erase(it);
         continue;
       }else{
         it++;
       }
-
     }
-
   return chirps;
 }
 

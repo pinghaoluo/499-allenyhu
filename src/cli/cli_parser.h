@@ -49,6 +49,8 @@ class CliParser {
 
   // Helper function to parse monitor command
   std::string ParseMonitor(const std::string& uname);
+  
+  std::string ParseStream(const std::string& uname,const std::string& hash_tag);
 };
 
 #endif  // SRC_CLI_CLI_PARSER_H_

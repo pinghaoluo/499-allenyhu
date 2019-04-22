@@ -50,6 +50,10 @@ class ServiceLayerClient {
   // @ret: vector of Chirps to be streamed
   std::vector<ChirpObj> Monitor(const std::string& uname);
 
+  // Monitor command to send MonitorRequest and receive stream of MonitorReply
+  // @uname: user requesting monitor
+  // @ret: vector of Chirps to be streamed
+  std::vector<ChirpObj> Stream(const std::string& uname,const std::string& hash_tag);
  private:
   std::unique_ptr<chirp::ServiceLayer::Stub> stub_;
 };

@@ -34,6 +34,8 @@ ChirpObj ServiceLayerObj::MakeChirp(
   return ChirpObj();
 }
 
+
+
 void ServiceLayerObj::MakeReply(const std::string& parent_id,
                                 const std::string& chirp_string) {
   // Implementation based on feedback from Ralph Chung

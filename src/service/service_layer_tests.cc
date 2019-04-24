@@ -350,7 +350,7 @@ TEST(ServiceLayerStream, BasicStreamWithHashTag) {
 // Tests HashTag function for ServiceLayer
 // Due to lack of GRPC, will return vector of store stream chirps
 // new chirps Should only return vector is it contains the hash tag
-TEST(ServiceLayerStream, StramingChirpWithNoHashTag) {
+TEST(ServiceLayerStream,StreamingChirpWithNoHashTag) {
   ServiceLayer s;
   s.Register("root");
   s.Register("follower");
@@ -372,7 +372,7 @@ TEST(ServiceLayerStream, StramingChirpWithNoHashTag) {
 // Tests HashTag function for ServiceLayer
 // Due to lack of GRPC, will return vector of store stream chirps
 // new chirps Should only return vector is it contains the hash tag
-TEST(ServiceLayerMonitor, StramingWithMultipleUser) {
+TEST(ServiceLayerStream, StreamingWithMultipleUser) {
   ServiceLayer s;
   s.Register("root");
   s.Register("follower");

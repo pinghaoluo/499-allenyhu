@@ -83,7 +83,7 @@ class ServiceLayer {
   // Helper function to parse data from DataStore
   // @hash_tag hash tag being check
   // @ret: vectors of ChirpObj containing hash tags
-  std::vector<ChirpObj> CheckTag(std::vector<ChirpObj> &chirps,const std::string& hash_tag);
+  bool CheckTag(ChirpObj &chirps,const std::string& hash_tag);
 
   // Helper function to set up Read data for Chirps replying to another Chirp
   // @parent_id: id of the Chirp being replied to

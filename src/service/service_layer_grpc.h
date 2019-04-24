@@ -55,7 +55,7 @@ class ServiceLayerObj {
 
  private:
   //Store all users
-  const std::string AllUserKey_ = "-all-user-key";
+  const std::string kAllUserKey_ = "-all-user-key";
 
   // Used for follow storage in store
   const std::string kFollowKey_ = "-follow-";
@@ -85,7 +85,7 @@ class ServiceLayerObj {
   // Helper function to parse data from DataStore
   // @hash_tag hash tag being check
   // @ret: vectors of ChirpObj containing hash tags
-  std::vector<ChirpObj> CheckTag(std::vector<ChirpObj> &chirps,const std::string& hash_tag);
+  bool CheckTag(ChirpObj &chirps,const std::string& hash_tag);
 
   // Helper function to set up Read data for Chirps replying to another Chirp
   // @parent_id: id of the Chirp being replied to

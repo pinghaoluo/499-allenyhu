@@ -324,6 +324,79 @@ TEST(ServiceLayerMonitor, BaseMonitorOnlyOneFollowed) {
   EXPECT_EQ(c1.to_string(), check[0].to_string());
 }
 
+// Tests HashTag function for ServiceLayer
+// Due to lack of GRPC, will return vector of store stream chirps
+// new chirps Should only return vector is it contains the hash tag
+TEST(ServiceLayerStream, BasicStreamWithHashTag) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Register("test");
+
+  auto check = s.HashTag("user1","hi");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "root #hi", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("test", "test", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  check = s.HashTag("user1","hi");
+  ASSERT_EQ(1, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+}
+
+// Tests HashTag function for ServiceLayer
+// Due to lack of GRPC, will return vector of store stream chirps
+// new chirps Should only return vector is it contains the hash tag
+TEST(ServiceLayerStream,StreamingChirpWithNoHashTag) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Register("test");
+
+  auto check = s.HashTag("user1","hi");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "root", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("test", "test", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+  check = s.HashTag("user1","hi");
+  EXPECT_TRUE(check.empty());
+}
+
+// Tests HashTag function for ServiceLayer
+// Due to lack of GRPC, will return vector of store stream chirps
+// new chirps Should only return vector is it contains the hash tag
+TEST(ServiceLayerStream, StreamingWithMultipleUser) {
+  ServiceLayer s;
+  s.Register("root");
+  s.Register("follower");
+  s.Register("test");
+
+
+  auto check = s.HashTag("user1","??");
+  EXPECT_TRUE(check.empty());
+
+  ChirpObj c1 = s.MakeChirp("root", "root #??", std::nullopt);
+  ASSERT_FALSE(c1.id().empty());
+
+  ChirpObj c2 = s.MakeChirp("test", "test #??", std::nullopt);
+  ASSERT_FALSE(c2.id().empty());
+
+
+  check = s.HashTag("user1","??");
+  ASSERT_EQ(2, check.size());
+  EXPECT_EQ(c1.to_string(), check[0].to_string());
+  EXPECT_EQ(c2.to_string(), check[1].to_string());
+}
+
+
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

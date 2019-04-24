@@ -5,13 +5,13 @@ ServiceLayerObj::ServiceLayerObj()
                               grpc::InsecureChannelCredentials())) {}
 
 bool ServiceLayerObj::Register(const std::string& uname) {
-  // storing all users
-  std::vector<std::string> entry = ds_.Get(kAllUserKey_); 
+  // std::cout<<"testing"<<std::endl;
+  std::vector<std::string> entry = ds_.Get(AllUserKey_); 
 
   if (uname.empty() || !ds_.Get(uname).empty()) {
     return false;
   }
-  ds_.Put(kAllUserKey_,uname);
+  ds_.Put(AllUserKey_,uname);
   return ds_.Put(uname, "registered");
 }
 
@@ -108,8 +108,9 @@ void ServiceLayerObj::ReadDfs(const std::string& key_base,
 }
 
 std::vector<ChirpObj> ServiceLayerObj::HashTag(const std::string& uname,const std::string& hash_tag) {
-  //getting all users
-  std::vector<std::string> users = ds_.Get(kAllUserKey_); 
+  std::vector<std::string> users = ds_.Get(AllUserKey_); 
+  // std::cout<<uname<<": "<<hash_tag<<std::endl;
+  // Setting up DS to store monitor data
   for (const std::string& u : users) {
     PutMonitorKey(uname, u);
   }
@@ -123,16 +124,15 @@ std::vector<ChirpObj> ServiceLayerObj::HashTag(const std::string& uname,const st
   // Loop over all potential monitor keys present
   while (!entry.empty()) {
     ChirpObj c = ParseChirpString(entry[0]);
-    bool contain =  CheckTag(c,hash_tag);
-    if(contain){
-       chirps.push_back(c);
-    }
+    chirps.push_back(c);
     // No longer need this key once entry has been stored
     ds_.DeleteKey(key);
     counter++;
     key = monitor_check_base + std::to_string(counter);
     entry = ds_.Get(key);
   }
+
+  CheckTag(chirps,hash_tag);
 
   return chirps;
 }
@@ -165,11 +165,11 @@ std::vector<ChirpObj> ServiceLayerObj::Monitor(const std::string& uname) {
   return chirps;
 }
 
-bool ServiceLayerObj::CheckTag(ChirpObj &chirp,const std::string& hash_tag){
-      //bool to check if contain hash rag
+std::vector<ChirpObj> ServiceLayerObj::CheckTag(std::vector<ChirpObj> &chirps,const std::string& hash_tag){
+     std::cout<<": "<<hash_tag<<std::endl;
+  for(std::vector<ChirpObj>::iterator it = chirps.begin(); it != chirps.end();) {
       bool contain = false;
-      //text of chirp
-      std::string text = chirp.text();
+      std::string text = it->text();
       // holds all the positions that sub occurs within #
       std::vector<size_t> positions; 
       size_t pos = text.find("#", 0);
@@ -179,30 +179,31 @@ bool ServiceLayerObj::CheckTag(ChirpObj &chirp,const std::string& hash_tag){
           pos = text.find("#",pos+1);
       }
       if(positions.size() == 0){
-        return false;
+        it = chirps.erase(it);
+        continue;
       }
 
-      //check all positions with #
       for(auto p:positions){
         std::string sub = text.substr(p);
         std::size_t pos1 = sub.find(" ");
         std::string tag = sub.substr (1,pos1);
-        //trim the tags with white space
         tag.erase( std::remove_if( tag.begin(), tag.end(), ::isspace ), tag.end() );
         if(tag == hash_tag){
-          // std::cout<<tag<<std::endl;
-          // std::cout<<hash_tag<<std::endl;
+          std::cout<<tag<<std::endl;
+          std::cout<<hash_tag<<std::endl;
           contain = true;
         }
       }
-      //if doesnt contain 
       if(contain == false){
-        return false;
+        it = chirps.erase(it);
+        continue;
       }else{
-        return true;
+        it++;
       }
 
-  return contain;
+    }
+
+  return chirps;
 }
 
 void ServiceLayerObj::PutMonitorKey(const std::string& uname,
